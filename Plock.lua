@@ -9519,193 +9519,8 @@ v495:AddButton({
     end
 })
 local _ = v496:AddSection({"Settings Farming"})
--- ===== MASTER SWITCH =====
-local FAST_ATTACK_ENABLED = false
-
--- ===== FAST 1 (AttackAll) =====
-local function GetBladeHits()
-    local targets = {}
-    local hrp = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return targets end
-
-    for _, part in pairs({workspace.Enemies, workspace.Characters}) do
-        for _, v in pairs(part:GetChildren()) do
-            if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid")
-            and (v.HumanoidRootPart.Position - hrp.Position).Magnitude < 60 then
-                table.insert(targets, v)
-            end
-        end
-    end
-    return targets
-end
-
-local function AttackAll()
-    if not FAST_ATTACK_ENABLED then return end
-
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    if not character then return end
-
-    local enemies = GetBladeHits()
-    if #enemies > 0 then
-        local net = game.ReplicatedStorage.Modules.Net
-        net["RE/RegisterAttack"]:FireServer(-math.huge)
-
-        local args = {nil, {}}
-        for i,v in pairs(enemies) do
-            if not args[1] then args[1] = v.Head end
-            args[2][i] = {v, v.HumanoidRootPart}
-        end
-        net["RE/RegisterHit"]:FireServer(unpack(args))
-    end
-end
-
--- ===== FAST 2 (FastAttack Class) =====
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Workspace = game:GetService("Workspace")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-
-local Player = Players.LocalPlayer
-local Modules = ReplicatedStorage:WaitForChild("Modules")
-local Net = Modules:WaitForChild("Net")
-local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
-local RegisterHit = Net:WaitForChild("RE/RegisterHit")
-local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
-local GunValidator = ReplicatedStorage.Remotes.Validator2
-
-local Config = {
-    AttackDistance = 65,
-    AttackMobs = true,
-    AttackPlayers = true,
-    AttackCooldown = 0.2,
-    ComboResetTime = 0.3,
-    MaxCombo = 4,
-    HitboxLimbs = {"RightLowerArm","RightUpperArm","LeftLowerArm","LeftUpperArm","RightHand","LeftHand"},
-    AutoClickEnabled = true
-}
-
-local FastAttack = {}
-FastAttack.__index = FastAttack
-
-function FastAttack.new()
-    local self = setmetatable({
-        Debounce = 0,
-        ComboDebounce = 0,
-        M1Combo = 0,
-        EnemyRootPart = nil
-    }, FastAttack)
-
-    pcall(function()
-        self.CombatFlags = require(Modules.Flags).COMBAT_REMOTE_THREAD
-        self.ShootFunction = getupvalue(require(ReplicatedStorage.Controllers.CombatController).Attack, 9)
-        local ls = Player.PlayerScripts:FindFirstChildOfClass("LocalScript")
-        if ls and getsenv then
-            self.HitFunction = getsenv(ls)._G.SendHitsToServer
-        end
-    end)
-
-    return self
-end
-
-function FastAttack:IsEntityAlive(e)
-    return e and e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0
-end
-
-function FastAttack:GetBladeHits(Character)
-    local hits = {}
-    local pos = Character:GetPivot().Position
-    for _, folder in pairs({Workspace.Enemies, Workspace.Characters}) do
-        for _, v in pairs(folder:GetChildren()) do
-            if v ~= Character and self:IsEntityAlive(v) then
-                local part = v:FindFirstChild("HumanoidRootPart")
-                if part and (pos - part.Position).Magnitude <= Config.AttackDistance then
-                    if not self.EnemyRootPart then
-                        self.EnemyRootPart = part
-                    else
-                        table.insert(hits, {v, part})
-                    end
-                end
-            end
-        end
-    end
-    return hits
-end
-
-function FastAttack:Attack()
-    if not FAST_ATTACK_ENABLED then return end
-    if not Config.AutoClickEnabled then return end
-
-    local char = Player.Character
-    if not char or not self:IsEntityAlive(char) then return end
-
-    local tool = char:FindFirstChildOfClass("Tool")
-    if not tool then return end
-
-    self.EnemyRootPart = nil
-    local hits = self:GetBladeHits(char)
-    if self.EnemyRootPart then
-        RegisterAttack:FireServer(0)
-        if self.CombatFlags and self.HitFunction then
-            self.HitFunction(self.EnemyRootPart, hits)
-        else
-            RegisterHit:FireServer(self.EnemyRootPart, hits)
-        end
-    end
-end
-
-local AttackInstance = FastAttack.new()
-
--- ===== FAST 3 (OLD REGISTER SPAM) =====
-local function FastOld()
-    if not FAST_ATTACK_ENABLED then return end
-
-    local hrp = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-
-    local bladehits = {}
-    for _,v in pairs(workspace.Enemies:GetChildren()) do
-        if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart")
-        and v.Humanoid.Health > 0
-        and (v.HumanoidRootPart.Position - hrp.Position).Magnitude <= 65 then
-            table.insert(bladehits, v)
-        end
-    end
-
-    if #bladehits > 0 then
-        local args = {nil, {}, nil, "078da341"}
-        for i,v in pairs(bladehits) do
-            RegisterAttack:FireServer(0)
-            if not args[1] then args[1] = v.Head end
-            args[2][i] = {v, v.HumanoidRootPart}
-        end
-        RegisterHit:FireServer(unpack(args))
-    end
-end
-
--- ===== MAIN LOOP (CONTROLADO) =====
-RunService.Stepped:Connect(function()
-    if FAST_ATTACK_ENABLED then
-        AttackAll()
-        AttackInstance:Attack()
-        FastOld()
-    end
-end)
-
--- ===== SINGLE TOGGLE =====
-v496:AddToggle({
-    Name = "Fast Attack",
-    Default = true,
-    Callback = function(v)
-        FAST_ATTACK_ENABLED = v
-        if v then
-            print("")
-        else
-            print("")
-        end
-    end
-})
+v496:AddParagraph({Title = "Unban Fast Attack - M1 Fruit", Content = "On:    "})
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
 v496:AddToggle({
     Name = "Bring Mod",
     description = "",
@@ -9889,9 +9704,16 @@ spawn(function()
         end
     end
 end)
-v496:AddToggle({Title = "Walk on Water", Value = true, Callback = function(v1188)
-    _G.WalkWater = v1188
-end})
+v496:AddToggle({
+    Title = "Walk on Water",
+    Value = true,
+    Callback = function(v1188)
+        _G.WalkWater = v1188
+    end
+})
+
+_G.WalkWater = true
+
 spawn(function()
     while task.wait() do
         pcall(function()
