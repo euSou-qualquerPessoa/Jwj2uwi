@@ -4956,6 +4956,59 @@ spawn(function()
         end
     end
 end)
+local ChestBypass = false
+
+v485:AddToggle({
+    Title = "Auto Farm Chest [ Bypass ]",
+    Value = false,
+    Callback = function(v)
+        ChestBypass = v
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        if ChestBypass then
+            local Players = game:GetService("Players")
+            local LocalPlayer = Players.LocalPlayer
+            local CollectionService = game:GetService("CollectionService")
+
+            local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+            local startTick = tick()
+
+            while ChestBypass and (tick() - startTick) < 4 do
+                character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+                local charPos = character:GetPivot().Position
+                local chests = CollectionService:GetTagged("_ChestTagged")
+
+                local closest, dist = nil, math.huge
+                for i = 1, #chests do
+                    local chest = chests[i]
+                    if not chest:GetAttribute("IsDisabled") then
+                        local d = (chest:GetPivot().Position - charPos).Magnitude
+                        if d < dist then
+                            dist = d
+                            closest = chest
+                        end
+                    end
+                end
+
+                if closest then
+                    character:PivotTo(CFrame.new(closest:GetPivot().Position))
+                    task.wait(0.2)
+                else
+                    break
+                end
+            end
+
+            if ChestBypass and LocalPlayer.Character then
+                LocalPlayer.Character:BreakJoints()
+                LocalPlayer.CharacterAdded:Wait()
+            end
+        end
+    end
+end)
+
 local _ = v485:AddSection({"Boss Farm"})
 local v657 = v485:AddParagraph({Title = "Boss Spawn Status", Content = "Initializing..."})
 task.spawn(function()
