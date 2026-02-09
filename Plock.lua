@@ -3131,48 +3131,53 @@ spawn(function()
         end
     end)
 end)
-function StopTween(v365)
-    local l_Character_1 = game:GetService("Players").LocalPlayer.Character
-    if not v365 then
+function StopTween(state)
+    local player = game:GetService("Players").LocalPlayer
+    local char = player.Character
+    if not char then return end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+
+    if not state then
         _G.StopTween = true
-        wait(0.2)
-        topos(l_Character_1.HumanoidRootPart.CFrame)
-        wait(0.2)
-        if l_Character_1.HumanoidRootPart:FindFirstChild("BodyClip") then
-            l_Character_1.HumanoidRootPart.BodyClip:Destroy()
-        end
-        if l_Character_1:FindFirstChild("Block") then
-            l_Character_1.Block:Destroy()
-        end
-        _G.StopTween = false
-        _G.Clip = false
-    end
-    if l_Character_1:FindFirstChild("Highlight") then
-        l_Character_1.Highlight:Destroy()
-    end
-end
-function LockTween()
-    if _G.LockTween then
-        return 
-    else
-        _G.LockTween = true
-        wait()
-        local l_Character_2 = game.Players.LocalPlayer.Character
-        if l_Character_2 and l_Character_2:IsDescendantOf(game.Workspace) then
-            local l_HumanoidRootPart_0 = l_Character_2:WaitForChild("HumanoidRootPart")
-            if l_HumanoidRootPart_0 then
-                l_HumanoidRootPart_0.CFrame = l_HumanoidRootPart_0.CFrame
+
+        -- trava qualquer tween/voo imediatamente
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+        hrp.Velocity = Vector3.zero
+
+        -- mata qualquer coisa que cause voo / pull
+        for _,obj in pairs(hrp:GetChildren()) do
+            if obj:IsA("BodyVelocity")
+            or obj:IsA("BodyGyro")
+            or obj:IsA("BodyPosition")
+            or obj:IsA("AlignPosition")
+            or obj:IsA("AlignOrientation") then
+                obj:Destroy()
             end
         end
-        wait()
-        if l_Character_2:FindFirstChild("BodyClip") then
-            l_Character_2.BodyClip:Destroy()
+
+        -- mantém teu comportamento original
+        pcall(function()
+            topos(hrp.CFrame)
+        end)
+
+        task.wait(0.1)
+
+        if hrp:FindFirstChild("BodyClip") then
+            hrp.BodyClip:Destroy()
         end
-        if l_Character_2:FindFirstChild("PartTele") then
-            l_Character_2.Block:Destroy()
+        if char:FindFirstChild("Block") then
+            char.Block:Destroy()
         end
-        _G.LockTween = false
-        return 
+
+        _G.Clip = false
+        _G.StopTween = false
+    end
+
+    if char:FindFirstChild("Highlight") then
+        char.Highlight:Destroy()
     end
 end
 function BringMob(v369)
@@ -8561,179 +8566,90 @@ v493:AddToggle({
     Name = "Auto Tween To Island",
     description = "",
     Default = false,
-    Callback = function(v1119)
-        _G.TeleportIsland = v1119
+    Callback = function(v)
+        _G.TeleportIsland = v
         StopTween(_G.TeleportIsland)
     end
 })
-local function v1120()
-    if _G.SelectIsland then
-        if _G.SelectIsland ~= "WindMill" then
-            if _G.SelectIsland ~= "Marine" then
-                if _G.SelectIsland ~= "Middle Town" then
-                    if _G.SelectIsland ~= "Jungle" then
-                        if _G.SelectIsland == "Pirate Village" then
-                            v1116(CFrame.new(-1181.309, 4.751, 3803.546))
-                        elseif _G.SelectIsland ~= "Desert" then
-                            if _G.SelectIsland == "Snow Island" then
-                                v1116(CFrame.new(1347.807, 104.668, -1319.737))
-                            elseif _G.SelectIsland == "MarineFord" then
-                                v1116(CFrame.new(-4914.821, 50.964, 4281.028))
-                            elseif _G.SelectIsland ~= "Colosseum" then
-                                if _G.SelectIsland ~= "Sky Island 1" then
-                                    if _G.SelectIsland ~= "Sky Island 2" then
-                                        if _G.SelectIsland ~= "Sky Island 3" then
-                                            if _G.SelectIsland ~= "Prison" then
-                                                if _G.SelectIsland == "Magma Village" then
-                                                    v1116(CFrame.new(-5247.716, 12.884, 8504.969))
-                                                elseif _G.SelectIsland ~= "Under Water Island" then
-                                                    if _G.SelectIsland == "Fountain City" then
-                                                        v1116(CFrame.new(5127.128, 59.501, 4105.446))
-                                                    elseif _G.SelectIsland ~= "Shank Room" then
-                                                        if _G.SelectIsland ~= "Mob Island" then
-                                                            if _G.SelectIsland == "The Cafe" then
-                                                                v1116(CFrame.new(-380.479, 77.22, 255.826))
-                                                            elseif _G.SelectIsland ~= "Frist Spot" then
-                                                                if _G.SelectIsland == "Dark Area" then
-                                                                    v1116(CFrame.new(3780.03, 22.652, -3498.586))
-                                                                elseif _G.SelectIsland ~= "Flamingo Mansion" then
-                                                                    if _G.SelectIsland ~= "Flamingo Room" then
-                                                                        if _G.SelectIsland ~= "Green Zone" then
-                                                                            if _G.SelectIsland == "Factory" then
-                                                                                v1116(CFrame.new(424.127, 211.162, -427.54))
-                                                                            elseif _G.SelectIsland == "Colossuim" then
-                                                                                v1116(CFrame.new(-1503.622, 219.796, 1369.31))
-                                                                            elseif _G.SelectIsland ~= "Zombie Island" then
-                                                                                if _G.SelectIsland == "Two Snow Mountain" then
-                                                                                    v1116(CFrame.new(753.143, 408.236, -5274.615))
-                                                                                elseif _G.SelectIsland == "Punk Hazard" then
-                                                                                    v1116(CFrame.new(-6127.654, 15.952, -5040.286))
-                                                                                elseif _G.SelectIsland ~= "Cursed Ship" then
-                                                                                    if _G.SelectIsland ~= "Ice Castle" then
-                                                                                        if _G.SelectIsland ~= "Forgotten Island" then
-                                                                                            if _G.SelectIsland == "Ussop Island" then
-                                                                                                v1116(CFrame.new(4816.862, 8.46, 2863.82))
-                                                                                            elseif _G.SelectIsland == "Mini Sky Island" or _G.SelectIsland == "MiniSky" then
-                                                                                                v1116(CFrame.new(-288.741, 49326.316, -35248.594))
-                                                                                            elseif _G.SelectIsland ~= "Great Tree" then
-                                                                                                if _G.SelectIsland ~= "Castle On The Sea" then
-                                                                                                    if _G.SelectIsland ~= "Port Town" then
-                                                                                                        if _G.SelectIsland ~= "Hydra Island" then
-                                                                                                            if _G.SelectIsland == "Floating Turtle" then
-                                                                                                                v1116(CFrame.new(-13274.528, 531.821, -7579.223))
-                                                                                                            elseif _G.SelectIsland ~= "Mansion" then
-                                                                                                                if _G.SelectIsland ~= "Haunted Castle" then
-                                                                                                                    if _G.SelectIsland == "Ice Cream Island" then
-                                                                                                                        v1116(CFrame.new(-902.568, 79.932, -10988.848))
-                                                                                                                    elseif _G.SelectIsland == "Peanut Island" then
-                                                                                                                        v1116(CFrame.new(-2062.748, 50.474, -10232.568))
-                                                                                                                    elseif _G.SelectIsland ~= "Cake Island" then
-                                                                                                                        if _G.SelectIsland ~= "Cocoa Island" then
-                                                                                                                            if _G.SelectIsland == "Candy Island" then
-                                                                                                                                v1116(CFrame.new(-1014.424, 149.111, -14555.963))
-                                                                                                                            elseif _G.SelectIsland ~= "Tiki Outpost" then
-                                                                                                                                if _G.SelectIsland == "Dragon Dojo" then
-                                                                                                                                    v1116(CFrame.new(5743.319, 1206.91, 936.011))
-                                                                                                                                end
-                                                                                                                            else
-                                                                                                                                v1116(CFrame.new(-16218.683, 9.086, 445.618))
-                                                                                                                            end
-                                                                                                                        else
-                                                                                                                            v1116(CFrame.new(87.943, 73.555, -12319.465))
-                                                                                                                        end
-                                                                                                                    else
-                                                                                                                        v1116(CFrame.new(-1884.775, 19.328, -11666.897))
-                                                                                                                    end
-                                                                                                                else
-                                                                                                                    v1116(CFrame.new(-9515.372, 164.006, 5786.061))
-                                                                                                                end
-                                                                                                            else
-                                                                                                                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-12471.17, 374.94, -7551.678))
-                                                                                                            end
-                                                                                                        else
-                                                                                                            v1116(CFrame.new(5291.249, 1005.443, 393.762))
-                                                                                                        end
-                                                                                                    else
-                                                                                                        v1116(CFrame.new(-226.751, 20.603, 5538.34))
-                                                                                                    end
-                                                                                                else
-                                                                                                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5083.26, 314.606, -3175.673))
-                                                                                                end
-                                                                                            else
-                                                                                                v1116(CFrame.new(2681.274, 1682.809, -7190.985))
-                                                                                            end
-                                                                                        else
-                                                                                            v1116(CFrame.new(-3032.764, 317.897, -10075.373))
-                                                                                        end
-                                                                                    else
-                                                                                        v1116(CFrame.new(6148.412, 294.387, -6741.117))
-                                                                                    end
-                                                                                else
-                                                                                    v1116(CFrame.new(923.402, 125.057, 32885.875))
-                                                                                end
-                                                                            else
-                                                                                v1116(CFrame.new(-5622.033, 492.196, -781.786))
-                                                                            end
-                                                                        else
-                                                                            v1116(CFrame.new(-2448.53, 73.016, -3210.631))
-                                                                        end
-                                                                    else
-                                                                        v1116(CFrame.new(2284.414, 15.152, 875.725))
-                                                                    end
-                                                                else
-                                                                    v1116(CFrame.new(-483.734, 332.038, 595.327))
-                                                                end
-                                                            else
-                                                                v1116(CFrame.new(-11.311, 29.277, 2771.522))
-                                                            end
-                                                        else
-                                                            v1116(CFrame.new(-2850.201, 7.392, 5354.993))
-                                                        end
-                                                    else
-                                                        v1116(CFrame.new(-1442.166, 29.879, -28.355))
-                                                    end
-                                                else
-                                                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(61163.852, 11.68, 1819.784))
-                                                end
-                                            else
-                                                v1116(CFrame.new(4875.33, 5.652, 734.85))
-                                            end
-                                        else
-                                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894.618, 5547.142, -380.291))
-                                        end
-                                    else
-                                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-4607.823, 872.543, -1667.557))
-                                    end
-                                else
-                                    v1116(CFrame.new(-4869.103, 733.461, -2667.018))
-                                end
-                            else
-                                v1116(CFrame.new(-1427.62, 7.288, -2792.772))
-                            end
-                        else
-                            v1116(CFrame.new(944.158, 20.92, 4373.3))
-                        end
-                    else
-                        v1116(CFrame.new(-1612.796, 36.852, 149.128))
-                    end
-                else
-                    v1116(CFrame.new(-690.331, 15.094, 1582.238))
-                end
-            else
-                v1116(CFrame.new(-2566.43, 6.856, 2045.256))
-            end
-        else
-            v1116(CFrame.new(979.799, 16.516, 1429.047))
-        end
-        return 
-    else
-        return 
-    end
+
+local MansionCFrame = CFrame.new(-12471.17, 374.94, -7551.678)
+
+local Islands = {
+    ["WindMill"] = CFrame.new(979.799, 16.516, 1429.047),
+    ["Marine"] = CFrame.new(-2566.43, 6.856, 2045.256),
+    ["Middle Town"] = CFrame.new(-690.331, 15.094, 1582.238),
+    ["Jungle"] = CFrame.new(-1612.796, 36.852, 149.128),
+    ["Pirate Village"] = CFrame.new(-1181.309, 4.751, 3803.546),
+    ["Desert"] = CFrame.new(944.158, 20.92, 4373.3),
+    ["Snow Island"] = CFrame.new(1347.807, 104.668, -1319.737),
+    ["MarineFord"] = CFrame.new(-4914.821, 50.964, 4281.028),
+    ["Magma Village"] = CFrame.new(-5247.716, 12.884, 8504.969),
+    ["Fountain City"] = CFrame.new(5127.128, 59.501, 4105.446),
+    ["Sky Island 1"] = CFrame.new(-483.734, 332.038, 595.327),
+    ["Sky Island 2"] = CFrame.new(2284.414, 15.152, 875.725),
+    ["Sky Island 3"] = CFrame.new(-2448.53, 73.016, -3210.631),
+    ["Prison"] = CFrame.new(4875.33, 5.652, 734.85),
+    ["Colosseum"] = CFrame.new(-11.311, 29.277, 2771.522),
+    ["Under Water Island"] = CFrame.new(-2850.201, 7.392, 5354.993),
+    ["Shank Room"] = CFrame.new(-1442.166, 29.879, -28.355),
+    ["Mob Island"] = CFrame.new(-2850.201, 7.392, 5354.993),
+    ["The Cafe"] = CFrame.new(-380.479, 77.22, 255.826),
+    ["Dark Area"] = CFrame.new(3780.03, 22.652, -3498.586),
+    ["Factory"] = CFrame.new(424.127, 211.162, -427.54),
+    ["Colossuim"] = CFrame.new(-1503.622, 219.796, 1369.31),
+    ["Two Snow Mountain"] = CFrame.new(753.143, 408.236, -5274.615),
+    ["Punk Hazard"] = CFrame.new(-6127.654, 15.952, -5040.286),
+    ["Ussop Island"] = CFrame.new(4816.862, 8.46, 2863.82),
+    ["Mini Sky Island"] = CFrame.new(-288.741, 49326.316, -35248.594),
+    ["Great Tree"] = CFrame.new(2681.274, 1682.809, -7190.985),
+    ["Port Town"] = CFrame.new(-226.751, 20.603, 5538.34),
+    ["Hydra Island"] = CFrame.new(5291.249, 1005.443, 393.762),
+    ["Floating Turtle"] = CFrame.new(-13274.528, 531.821, -7579.223),
+    ["Mansion"] = MansionCFrame,
+    ["Haunted Castle"] = CFrame.new(-9515.372, 164.006, 5786.061),
+    ["Ice Cream Island"] = CFrame.new(-902.568, 79.932, -10988.848),
+    ["Peanut Island"] = CFrame.new(-2062.748, 50.474, -10232.568),
+    ["Cake Island"] = CFrame.new(-1884.775, 19.328, -11666.897),
+    ["Cocoa Island"] = CFrame.new(87.943, 73.555, -12319.465),
+    ["Candy Island"] = CFrame.new(-1014.424, 149.111, -14555.963),
+    ["Tiki Outpost"] = CFrame.new(-16218.683, 9.086, 445.618),
+    ["Dragon Dojo"] = CFrame.new(5743.319, 1206.91, 936.011)
+}
+
+local function TryPortal(position)
+    local success = pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", position)
+    end)
+    return success
 end
+
+local function TeleportToIsland()
+    if not _G.SelectIsland or not _G.TeleportIsland then return end
+
+    local cf = Islands[_G.SelectIsland]
+    if not cf then return end
+
+    if _G.SelectIsland == "Mansion" then
+        if not TryPortal(Vector3.new(cf.X, cf.Y, cf.Z)) then
+            v1116(cf)
+        end
+        return
+    end
+
+    if _G.SelectIsland == "Castle On The Sea" then
+        if not TryPortal(Vector3.new(-5083.26, 314.606, -3175.673)) then
+            v1116(MansionCFrame)
+        end
+        return
+    end
+
+    v1116(cf)
+end
+
 task.spawn(function()
     while task.wait(0.5) do
         if _G.TeleportIsland then
-            v1120()
+            TeleportToIsland()
         end
     end
 end)
@@ -8925,50 +8841,80 @@ spawn(function()
     end)
 end)
 local _ = v494:AddSection({"Buff"})
-local l_LocalPlayer_18 = game:GetService("Players").LocalPlayer
-getgenv().WalkSpeedValue = 58
-getgenv().JumpValue = 58
+local Players = game:GetService("Players")
+local l_LocalPlayer_18 = Players.LocalPlayer
+
+-- arquivos de save
+local SPEED_SAVE_FILE = "walkspeed_save.txt"
+local JUMP_SAVE_FILE = "jump_save.txt"
+
+-- carrega valores salvos
+if isfile(SPEED_SAVE_FILE) then
+	getgenv().WalkSpeedValue = tonumber(readfile(SPEED_SAVE_FILE)) or 58
+else
+	getgenv().WalkSpeedValue = 58
+end
+
+if isfile(JUMP_SAVE_FILE) then
+	getgenv().JumpValue = tonumber(readfile(JUMP_SAVE_FILE)) or 58
+else
+	getgenv().JumpValue = 58
+end
+
 local function v1135(v1133)
-    local v1134 = v1133:WaitForChild("Humanoid", 5)
-    if v1134 then
-        v1134.WalkSpeed = getgenv().WalkSpeedValue
-        v1134.JumpPower = getgenv().JumpValue
-        v1134:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-            v1134.WalkSpeed = getgenv().WalkSpeedValue
-        end)
-    end
+	local v1134 = v1133:WaitForChild("Humanoid", 5)
+	if v1134 then
+		v1134.WalkSpeed = getgenv().WalkSpeedValue
+		v1134.JumpPower = getgenv().JumpValue
+
+		v1134:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+			v1134.WalkSpeed = getgenv().WalkSpeedValue
+		end)
+
+		v1134:GetPropertyChangedSignal("JumpPower"):Connect(function()
+			v1134.JumpPower = getgenv().JumpValue
+		end)
+	end
 end
+
 l_LocalPlayer_18.CharacterAdded:Connect(function(v1136)
-    v1135(v1136)
+	v1135(v1136)
 end)
+
 if l_LocalPlayer_18.Character then
-    v1135(l_LocalPlayer_18.Character)
+	v1135(l_LocalPlayer_18.Character)
 end
+
 v494:AddSlider({
-    Title = "Speed",
-    Min = 26,
-    Max = 300,
-    Default = getgenv().WalkSpeedValue,
-    Callback = function(v1137)
-        getgenv().WalkSpeedValue = v1137
-        local v1138 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
-        if v1138 then
-            v1138.WalkSpeed = v1137
-        end
-    end
+	Title = "Speed",
+	Min = 26,
+	Max = 300,
+	Default = getgenv().WalkSpeedValue,
+	Callback = function(v1137)
+		getgenv().WalkSpeedValue = v1137
+		writefile(SPEED_SAVE_FILE, tostring(v1137))
+
+		local v1138 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
+		if v1138 then
+			v1138.WalkSpeed = v1137
+		end
+	end
 })
+
 v494:AddSlider({
-    Title = "Jump",
-    Min = 50,
-    Max = 500,
-    Default = getgenv().JumpValue,
-    Callback = function(v1139)
-        getgenv().JumpValue = v1139
-        local v1140 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
-        if v1140 then
-            v1140.JumpPower = v1139
-        end
-    end
+	Title = "Jump",
+	Min = 50,
+	Max = 500,
+	Default = getgenv().JumpValue,
+	Callback = function(v1139)
+		getgenv().JumpValue = v1139
+		writefile(JUMP_SAVE_FILE, tostring(v1139))
+
+		local v1140 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
+		if v1140 then
+			v1140.JumpPower = v1139
+		end
+	end
 })
 v494:AddToggle({
     Name = "Delete Lava",
@@ -8996,114 +8942,128 @@ spawn(function()
 end)
 local _ = v494:AddSection({"Esp"})
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
-local ESPPlayer = false -- toggle inicial
 
-local function CreateESP(player)
-    if player == LocalPlayer then return end
+-- arquivo de save (igual speed/jump)
+local ESP_SAVE_FILE = "esp_players_save.txt"
 
-    local function apply(char)
-        local hrp = char:WaitForChild("HumanoidRootPart", 5)
-        local hum = char:WaitForChild("Humanoid", 5)
-        if not hrp or not hum then return end
-
-        if hrp:FindFirstChild("PlayerESP") then
-            hrp.PlayerESP:Destroy()
-        end
-
-        if not ESPPlayer then return end -- se toggle desligado, não cria nada
-
-        local gui = Instance.new("BillboardGui")
-        gui.Name = "PlayerESP"
-        gui.Adornee = hrp
-        gui.Size = UDim2.new(0, 200, 0, 50)
-        gui.StudsOffset = Vector3.new(0, 2.5, 0)
-        gui.AlwaysOnTop = true
-        gui.Parent = hrp
-
-local nameLabel = Instance.new("TextLabel")
-nameLabel.BackgroundTransparency = 1
-nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-nameLabel.Position = UDim2.new(0, 0, 0, 0)
-nameLabel.TextColor3 = Color3.fromRGB(200, 200, 200) -- cor do nome
-nameLabel.TextStrokeTransparency = 0
-nameLabel.TextScaled = true
-nameLabel.Font = Enum.Font.SourceSansBold
-nameLabel.Parent = gui
-
-local hpLabel = Instance.new("TextLabel")
-hpLabel.BackgroundTransparency = 1
-hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
-hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
-hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0) -- cor do HP
-hpLabel.TextStrokeTransparency = 0
-hpLabel.TextScaled = true
-hpLabel.Font = Enum.Font.SourceSansBold
-hpLabel.Parent = gui
-
-        local hpLabel = Instance.new("TextLabel")
-        hpLabel.BackgroundTransparency = 1
-        hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
-        hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
-        hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-        hpLabel.TextStrokeTransparency = 0
-        hpLabel.TextScaled = true
-        hpLabel.Font = Enum.Font.SourceSansBold
-        hpLabel.Parent = gui
-
-        game:GetService("RunService").RenderStepped:Connect(function()
-            if not char or not hrp or not hum or hum.Health <= 0 then
-                gui.Enabled = false
-                return
-            end
-
-            gui.Enabled = ESPPlayer
-
-            local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude)
-            nameLabel.Text = player.Name.." ["..dist.."m]"
-            hpLabel.Text = "["..math.floor(hum.Health).."/"..math.floor(hum.MaxHealth).."]"
-        end)
-    end
-
-    if player.Character then
-        apply(player.Character)
-    end
-
-    player.CharacterAdded:Connect(apply)
+-- estado inicial
+local ESPPlayer = false
+if isfile(ESP_SAVE_FILE) then
+	ESPPlayer = readfile(ESP_SAVE_FILE) == "true"
+else
+	writefile(ESP_SAVE_FILE, "false")
 end
 
--- Toggle GUI
+-- função ESP
+local function CreateESP(player)
+	if player == LocalPlayer then return end
+
+	local function apply(char)
+		local hrp = char:WaitForChild("HumanoidRootPart", 5)
+		local hum = char:WaitForChild("Humanoid", 5)
+		if not hrp or not hum then return end
+
+		if hrp:FindFirstChild("PlayerESP") then
+			hrp.PlayerESP:Destroy()
+		end
+
+		if not ESPPlayer then return end
+
+		local gui = Instance.new("BillboardGui")
+		gui.Name = "PlayerESP"
+		gui.Adornee = hrp
+		gui.Size = UDim2.new(0, 200, 0, 50)
+		gui.StudsOffset = Vector3.new(0, 2.5, 0)
+		gui.AlwaysOnTop = true
+		gui.Parent = hrp
+
+		local nameLabel = Instance.new("TextLabel")
+		nameLabel.BackgroundTransparency = 1
+		nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+		nameLabel.Position = UDim2.new(0, 0, 0, 0)
+		nameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+		nameLabel.TextStrokeTransparency = 0
+		nameLabel.TextScaled = true
+		nameLabel.Font = Enum.Font.SourceSansBold
+		nameLabel.Parent = gui
+
+		local hpLabel = Instance.new("TextLabel")
+		hpLabel.BackgroundTransparency = 1
+		hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
+		hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
+		hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+		hpLabel.TextStrokeTransparency = 0
+		hpLabel.TextScaled = true
+		hpLabel.Font = Enum.Font.SourceSansBold
+		hpLabel.Parent = gui
+
+		RunService.RenderStepped:Connect(function()
+			if not ESPPlayer or not char or not hrp or not hum or hum.Health <= 0 then
+				if gui then gui:Destroy() end
+				return
+			end
+
+			local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude)
+			nameLabel.Text = player.Name .. " [" .. dist .. "m]"
+			hpLabel.Text = "[" .. math.floor(hum.Health) .. "/" .. math.floor(hum.MaxHealth) .. "]"
+		end)
+	end
+
+	if player.Character then
+		apply(player.Character)
+	end
+
+	player.CharacterAdded:Connect(apply)
+end
+
+-- ativar ESP geral
+local function EnableESP()
+	for _,p in pairs(Players:GetPlayers()) do
+		CreateESP(p)
+	end
+end
+
+-- desativar ESP geral
+local function DisableESP()
+	for _,p in pairs(Players:GetPlayers()) do
+		if p ~= LocalPlayer and p.Character then
+			local hrp = p.Character:FindFirstChild("HumanoidRootPart")
+			if hrp and hrp:FindFirstChild("PlayerESP") then
+				hrp.PlayerESP:Destroy()
+			end
+		end
+	end
+end
+
+-- toggle redzlib
 v494:AddToggle({
-    Title = "Esp Players",
-    Value = false,
-    Callback = function(v1146)
-        ESPPlayer = v1146
-        -- limpa ESPs antigos quando desliga
-        if not ESPPlayer then
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer and player.Character then
-                    local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-                    if hrp and hrp:FindFirstChild("PlayerESP") then
-                        hrp.PlayerESP:Destroy()
-                    end
-                end
-            end
-        else
-            -- recria ESPs quando liga
-            for _, player in pairs(Players:GetPlayers()) do
-                CreateESP(player)
-            end
-        end
-    end
+	Title = "ESP Players",
+	Value = ESPPlayer,
+	Callback = function(v)
+		ESPPlayer = v
+		writefile(ESP_SAVE_FILE, tostring(v))
+
+		if v then
+			EnableESP()
+		else
+			DisableESP()
+		end
+	end
 })
 
--- Atualiza ESP quando jogador entra
-Players.PlayerAdded:Connect(CreateESP)
-
--- Inicializa ESP nos players existentes
-for _,p in pairs(Players:GetPlayers()) do
-    CreateESP(p)
+-- boot automático (igual speed/jump)
+if ESPPlayer then
+	EnableESP()
 end
+
+-- player novo
+Players.PlayerAdded:Connect(function(p)
+	if ESPPlayer then
+		CreateESP(p)
+	end
+end)
 v494:AddToggle({
     Title = "Esp Chest",
     Value = false,
@@ -9245,77 +9205,255 @@ v494:AddToggle({
         end
     end
 })
-local _ = v495:AddSection({"Buy Melee V1"})
-v495:AddButton({
-    Title = "Buy Black Leg $150,000",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
-    end
+local _ = v495:AddSection({"Fighting Style"})
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LP = Players.LocalPlayer
+
+local SEA
+if game.PlaceId == 2753915549 or game.PlaceId == 85211729168715 then
+	SEA = 1
+elseif game.PlaceId == 4442272183 or game.PlaceId == 79091703265657 then
+	SEA = 2
+elseif game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
+	SEA = 3
+else
+	return
+end
+
+_G.BuyFly = false
+local BV, BG
+local TargetPos = nil
+
+local NPCS = {
+	BlackLeg={[1]={Vector3.new(-988,13,3996)},[2]={Vector3.new(-4750.61, 35.08, -4846.33)},[3]={Vector3.new(-5043.64,371.35,-3183.40)}},
+	Electro={[1]={Vector3.new(-5382.27,14.15,-2150.34)},[2]={Vector3.new(-4863.81, 35.08, -4767.54)},[3]={Vector3.new(-4993.20,314.56,-3198.06)}},
+	FishmanKarate={[1]={Vector3.new(61584.35,18.85,988.89)},[2]={Vector3.new(-4960.04, 35.08, -4662.67)},[3]={Vector3.new(-5017.39,371.35,-3187.53)}},
+	Superhuman={[2]={Vector3.new(1378.05, 247.43, -5189.37)},[3]={Vector3.new(-4997.53,371.35,-3197.46)}},
+	DeathStep={[2]={Vector3.new(6360.04, 296.67, -6763.93)},[3]={Vector3.new(-4997.64,314.56,-3220.37)}},
+	SharkmanKarate={[2]={Vector3.new(-2602.40, 239.22, -10314.75)},[3]={Vector3.new(-4970.48,314.56,-3225.04)}},
+	ElectricClaw={[3]={Vector3.new(-10369.83,331.69,-10126.49)}},
+	DragonTalon={[3]={Vector3.new(5662.03,1211.32,858.60)}},
+	GodHuman={[3]={Vector3.new(-13775.56,334.66,-9877.67)}},
+	SanguineArt={[3]={Vector3.new(-16514.86,23.18,-190.84)}}
+}
+
+local function HRP()
+	return LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+end
+
+local LV, AO
+local TargetPos
+
+local function EnsureFly()
+	local hrp = HRP()
+	if not hrp then return end
+
+	if not LV or LV.Parent ~= hrp then
+		if LV then LV:Destroy() end
+		LV = Instance.new("LinearVelocity")
+		LV.Attachment0 = hrp:FindFirstChildOfClass("Attachment") or Instance.new("Attachment", hrp)
+		LV.MaxForce = math.huge
+		LV.VectorVelocity = Vector3.zero
+		LV.Parent = hrp
+	end
+
+	if not AO or AO.Parent ~= hrp then
+		if AO then AO:Destroy() end
+		AO = Instance.new("AlignOrientation")
+		AO.Attachment0 = hrp:FindFirstChildOfClass("Attachment")
+		AO.MaxTorque = math.huge
+		AO.Responsiveness = 200
+		AO.Parent = hrp
+	end
+end
+
+local function StopFly()
+	RunService:UnbindFromRenderStep("BuyFly")
+	if LV then LV:Destroy() LV=nil end
+	if AO then AO:Destroy() AO=nil end
+	TargetPos = nil
+end
+
+local function FlyTo(pos)
+	TargetPos = pos
+
+	RunService:BindToRenderStep("BuyFly", Enum.RenderPriority.Character.Value + 1, function()
+		if not _G.BuyFly then StopFly() return end
+
+		local hrp = HRP()
+		if not hrp then return end
+
+		EnsureFly()
+
+		for _,v in ipairs(LP.Character:GetDescendants()) do
+			if v:IsA("BasePart") then v.CanCollide = false end
+		end
+
+		local delta = TargetPos - hrp.Position
+		local dist = delta.Magnitude
+
+		if dist <= 3 then
+			LV.VectorVelocity = Vector3.zero
+			hrp.AssemblyLinearVelocity = Vector3.zero
+			hrp.CFrame = CFrame.new(TargetPos)
+			return
+		end
+
+		local dir = delta.Unit
+		LV.VectorVelocity = dir * math.clamp(dist * 6, 120, 330)
+		AO.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + dir)
+	end)
+end
+
+local function Buy(style, remote)
+	task.spawn(function()
+		local pos = NPCS[style] and NPCS[style][SEA]
+		if not pos then return end
+
+		FlyTo(pos[1])
+
+		repeat task.wait()
+		until (HRP() and (HRP().Position - pos[1]).Magnitude <= 4) or not _G.BuyFly
+
+		if _G.BuyFly then
+			ReplicatedStorage.Remotes.CommF_:InvokeServer(remote)
+		end
+	end)
+end
+
+LP.CharacterAdded:Connect(function()
+	task.wait(0.4)
+	if _G.BuyFly and TargetPos then
+		FlyTo(TargetPos)
+	end
+end)
+local function StopAllBuy()
+	_G.BuyFly = false
+	StopFly()
+end
+
+v495:AddToggle({
+	Title = "Buy Black Leg",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("BlackLeg","BuyBlackLeg")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Electro $550,000",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectro")
-    end
+
+v495:AddToggle({
+	Title = "Buy Electro",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("Electro","BuyElectro")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Water Kung Fu $750,000",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyFishmanKarate")
-    end
+
+v495:AddToggle({
+	Title = "Buy Fishman Karate",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("FishmanKarate","BuyFishmanKarate")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Dragon Claw 1,500F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "DragonClaw", "1")
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "DragonClaw", "2")
-    end
+
+v495:AddToggle({
+	Title = "Buy Superhuman",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("Superhuman","BuySuperhuman")
+		end
+	end
 })
-local _ = v495:AddSection({"Buy Melee V2"})
-v495:AddButton({
-    Title = "Buy Superhuman $3,000,000",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySuperhuman")
-    end
+
+v495:AddToggle({
+	Title = "Buy Death Step",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("DeathStep","BuyDeathStep")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Death Step $5,000,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDeathStep")
-    end
+
+v495:AddToggle({
+	Title = "Buy Sharkman Karate",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("SharkmanKarate","BuySharkmanKarate")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Sharkman Karate $2,500,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate", true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate")
-    end
+
+v495:AddToggle({
+	Title = "Buy Electric Claw",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("ElectricClaw","BuyElectricClaw")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Electric Claw $3,000,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectricClaw")
-    end
+
+v495:AddToggle({
+	Title = "Buy Dragon Talon",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("DragonTalon","BuyDragonTalon")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Dragon Talon $3,000,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDragonTalon")
-    end
+
+v495:AddToggle({
+	Title = "Buy God Human",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("GodHuman","BuyGodhuman")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy God Human $5,000,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyGodhuman")
-    end
+
+v495:AddToggle({
+	Title = "Buy Sanguine Art",
+	Value = false,
+	Callback = function(v)
+		StopAllBuy()
+		if v then
+			_G.BuyFly = true
+			Buy("SanguineArt","BuySanguineArt")
+		end
+	end
 })
-v495:AddButton({
-    Title = "Buy Sanguine Art $5,000,000 5,000F",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt", true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
-    end
-})
+
 local _ = v495:AddSection({"Buy Sea Event Crafting"})
 v495:AddButton({
     Title = "Craft Dragonheart",
