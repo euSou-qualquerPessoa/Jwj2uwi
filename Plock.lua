@@ -9897,7 +9897,7 @@ spawn(function()
 end)
 v496:AddToggle({
     Title = "Walk on Water",
-    Value = true,
+    Default = true,
     Callback = function(v1188)
         _G.WalkWater = v1188
     end
@@ -9991,7 +9991,7 @@ spawn(function()
         end
     end
 end)
-local _ = v496:AddSection({"Sea 1,2,3"})
+local _ = v496:AddSection({"JoinSea"})
 v496:AddButton({
     Title = "Join Sea 1",
     Callback = function()
@@ -10011,6 +10011,51 @@ v496:AddButton({
     end
 })
 local _ = v496:AddSection({"Other"})
+local Lighting = game:GetService("Lighting")
+local FULLBRIGHT_SAVE_FILE = "fullbright_save.txt"
+
+local function ApplyFullBright(state)
+	if state then
+		Lighting.Ambient = Color3.new(1, 1, 1)
+		Lighting.ColorShift_Bottom = Color3.new(1, 1, 1)
+		Lighting.ColorShift_Top = Color3.new(1, 1, 1)
+		Lighting.Brightness = 3
+		Lighting.GlobalShadows = false
+	else
+		Lighting.Ambient = Color3.new(0, 0, 0)
+		Lighting.ColorShift_Bottom = Color3.new(0, 0, 0)
+		Lighting.ColorShift_Top = Color3.new(0, 0, 0)
+		Lighting.Brightness = 1
+		Lighting.GlobalShadows = true
+	end
+end
+
+local FullBrightEnabled = false
+if isfile(FULLBRIGHT_SAVE_FILE) then
+	FullBrightEnabled = readfile(FULLBRIGHT_SAVE_FILE) == "true"
+end
+
+ApplyFullBright(FullBrightEnabled)
+
+v496:AddToggle({
+	Title = "Full Bright",
+	Value = FullBrightEnabled,
+	Callback = function(Value)
+		FullBrightEnabled = Value
+		writefile(FULLBRIGHT_SAVE_FILE, tostring(Value))
+		ApplyFullBright(Value)
+	end
+})
+
+v496:AddButton({
+   Title = "Remove Sky Fog",
+   Description = "",
+   Callback = function()
+    if Lighting:FindFirstChild("LightingLayers") then Lighting.LightingLayers:Destroy() end
+    if Lighting:FindFirstChild("SeaTerrorCC") then Lighting.SeaTerrorCC:Destroy() end
+    if Lighting:FindFirstChild("FantasySky") then Lighting.FantasySky:Destroy() end
+end
+})
 v496:AddButton({
     Title = "Join Pirates Team",
     Callback = function()
@@ -10062,7 +10107,6 @@ v496:AddButton({
         end
     end
 })
-local _ = v496:AddSection({"Auto Codes"})
 local v1218 = {
     "NOMOREHACK",
     "BANEXPLOIT",
@@ -10143,7 +10187,7 @@ v496:AddButton({
         end
     end
 })
-local _ = v496:AddSection({"Sever Hop"})
+local _ = v496:AddSection({"Server Hop"})
 v496:AddButton({
     Title = "Rejoin Server",
     Callback = function()
