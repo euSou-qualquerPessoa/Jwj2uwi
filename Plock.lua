@@ -1,4 +1,47 @@
--- This file was deobfuscated using Scene Deobfuscator discord.gg/deobfuscate :D
+-- =========================
+-- REDZ HUB BOOTSTRAP
+-- =========================
+Settings = Settings or {}
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+
+local Plr = Players.LocalPlayer
+
+-- =========================
+-- TRANSLATOR
+-- =========================
+if Settings.Translator == true then
+    pcall(function()
+        _G.RedzTranslator = HttpService:JSONDecode(
+            game:HttpGet(
+                "https://raw.githubusercontent.com/PlockScripts/newredz/refs/heads/main/NewTranslator/NewBloxFruits/NewPortuguese.json"
+            )
+        )
+    end)
+end
+
+-- =========================
+-- JOIN TEAM
+-- =========================
+local function JoinTeam()
+    local targetTeam = "Marines"
+    if Settings.JoinTeam == "Pirates" then
+        targetTeam = "Pirates"
+    end
+
+    if not Plr.Team or (Plr.Team.Name ~= "Marines" and Plr.Team.Name ~= "Pirates") then
+        pcall(function()
+            ReplicatedStorage
+                :WaitForChild("Remotes")
+                :WaitForChild("CommF_")
+                :InvokeServer("SetTeam", targetTeam)
+        end)
+    end
+end
+
+JoinTeam()
 
 hookfunction(require(game:GetService("ReplicatedStorage").Effect.Container.Death), function()
     -- empty block
@@ -3764,15 +3807,13 @@ end)
 
 local v484 = v466:MakeTab({"Discord", "info"})
 local v485 = v466:MakeTab({"Farm", "home"})
-local v486 = v466:MakeTab({"Auto Fishing", "rbxassetid://127664059821666"})
 local v487 = v466:MakeTab({"Quest | Items", "swords"})
-local v488 = v466:MakeTab({"Volcano Dojo", "cake"})
+local v486 = v466:MakeTab({"Auto Fishing", "rbxassetid://127664059821666"})
 local v489 = v466:MakeTab({"Sea Event", "waves"})
 local v490 = v466:MakeTab({"Race V4", "crown"})
 local v491 = v466:MakeTab({"Raid/Fruits", "cherry"})
-local v492 = v466:MakeTab({"Fruits | Check Stock", "apple"})
-local v493 = v466:MakeTab({"Teleport", "locate"})
 local v497 = v466:MakeTab({"Stats", "Signal"})
+local v493 = v466:MakeTab({"Teleport", "locate"})
 local v494 = v466:MakeTab({"Visual", "user"})
 local v495 = v466:MakeTab({"Shop", "shoppingCart"})
 local v496 = v466:MakeTab({"Misc", "settings"})
@@ -4166,7 +4207,7 @@ spawn(function()
 end)
 local _ = v485:AddSection({"Auto Raid Pirate"})
 v485:AddToggle({
-    Name = "Farm Pirate",
+    Name = "Auto Pirates Sea",
     Description = "Farm Raid Pirate",
     Default = false,
     Callback = function(v543)
@@ -4205,7 +4246,7 @@ spawn(function()
         end
     end
 end)
-local _ = v485:AddSection({"TyrantoftheSkies"})
+local _ = v485:AddSection({"Tyrant of the Skies"})
 local v548 = v485:AddParagraph({Title = "Check Eyes Status", Content = "Loading..."})
 task.spawn(function()
     while task.wait(1) do
@@ -4456,7 +4497,7 @@ task.spawn(function()
         end
     end
 end)
-local _ = v485:AddSection({"Workshop"})
+local _ = v485:AddSection({"Farm Bones"})
 local v589 = v485:AddParagraph({Title = "Check Bone", Content = "Loading..."})
 task.spawn(function()
     while task.wait(1) do
@@ -4467,7 +4508,7 @@ task.spawn(function()
     end
 end)
 v485:AddToggle({
-    Name = "Fram Bone",
+    Name = "Auto Farm Bones",
     Description = "",
     Default = false,
     Callback = function(v591)
@@ -4540,7 +4581,7 @@ spawn(function()
     end
 end)
 v485:AddToggle({
-    Name = "Seperator Hallow Scythe",
+    Name = "Auto Kill Soul Reaper",
     Description = "",
     Default = false,
     Callback = function(v599)
@@ -4583,7 +4624,7 @@ spawn(function()
     end
 end)
 v485:AddToggle({
-    Name = "Trade Bone",
+    Name = "Auto Trade Bones",
     Description = "",
     Default = false,
     Callback = function(v602)
@@ -5072,7 +5113,7 @@ else
     }
 end
 v485:AddDropdown({
-    Name = "Auto Select Boss",
+    Name = "Boss List",
     Description = "",
     Options = v658,
     Default = v658[1],
@@ -5081,7 +5122,7 @@ v485:AddDropdown({
     end
 })
 v485:AddToggle({
-    Name = "Farm Boss",
+    Name = "Auto Kill Boss Selected",
     Description = "",
     Default = false,
     Callback = function(v660)
@@ -5205,7 +5246,7 @@ function getConfigMaterial(v665)
     end
 end
 v485:AddDropdown({
-    Name = "Select Material",
+    Name = "Material List",
     Description = "",
     Options = v664,
     Default = v664[1],
@@ -5214,7 +5255,7 @@ v485:AddDropdown({
     end
 })
 v485:AddToggle({
-    Name = "Start Farm",
+    Name = "Auto Farm Material",
     Description = "",
     Default = false,
     Callback = function(v667)
@@ -6747,7 +6788,7 @@ if World3 then
         end)
     end
 end
-v488:AddButton({
+v487:AddButton({
     Title = "Tween Dragon Dojo",
     Value = false,
     Callback = function()
@@ -6755,7 +6796,7 @@ v488:AddButton({
         topos(CFrame.new(5841.29, 1208.32, 884.31))
     end
 })
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Dragon Huntery",
     Description = "",
     Default = false,
@@ -6878,8 +6919,8 @@ spawn(function()
         end
     end
 end)
-local _ = v488:AddSection({"Volcanic Island"})
-v488:AddButton({
+local _ = v487:AddSection({"Volcanic Island"})
+v487:AddButton({
     Title = "Craft Volcanic Magnet",
     Value = false,
     Callback = function()
@@ -6887,7 +6928,7 @@ v488:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v849))
     end
 })
-local v850 = v488:AddParagraph({Title = "Check Prehistoric Island", Content = "Loading..."})
+local v850 = v487:AddParagraph({Title = "Check Prehistoric Island", Content = "Loading..."})
 task.spawn(function()
     while task.wait(1) do
         pcall(function()
@@ -6899,7 +6940,7 @@ task.spawn(function()
         end)
     end
 end)
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Find Prehistoric",
     Description = "",
     Default = false,
@@ -7011,7 +7052,7 @@ l_RunService_0.RenderStepped:Connect(function()
         return 
     end
 end)
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Tween Prehistoric Island",
     Description = "",
     Default = false,
@@ -7040,7 +7081,7 @@ spawn(function()
         end
     end
 end)
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Defend Prehistoric",
     Description = "",
     Default = false,
@@ -7145,8 +7186,8 @@ spawn(function()
         end
     end
 end)
-local _ = v488:AddSection({"Auto Skill"})
-v488:AddToggle({
+local _ = v487:AddSection({"Auto Skill"})
+v487:AddToggle({
     Name = "Auto Use Melee",
     Description = "",
     Default = false,
@@ -7155,7 +7196,7 @@ v488:AddToggle({
         StopTween(_G.UseMelee)
     end
 })
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Use Sword",
     Description = "",
     Default = false,
@@ -7164,7 +7205,7 @@ v488:AddToggle({
         StopTween(_G.UseSword)
     end
 })
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Use Gun",
     Description = "",
     Default = false,
@@ -7173,8 +7214,8 @@ v488:AddToggle({
         StopTween(_G.UseGun)
     end
 })
-local _ = v488:AddSection({"Auto Kill Golem"})
-v488:AddToggle({
+local _ = v487:AddSection({"Auto Kill Golem"})
+v487:AddToggle({
     Name = "Auto Kill Golem",
     Description = "",
     Default = false,
@@ -7212,7 +7253,7 @@ spawn(function()
         end
     end
 end)
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Kill Aura Golem",
     Description = "",
     Default = false,
@@ -7252,8 +7293,8 @@ spawn(function()
         end
     end)
 end)
-local _ = v488:AddSection({"Auto Collect Bone,Egg"})
-v488:AddToggle({
+local _ = v487:AddSection({"Auto Collect Bone,Egg"})
+v487:AddToggle({
     Name = "Auto Collect Bone",
     Description = "",
     Default = false,
@@ -7273,7 +7314,7 @@ spawn(function()
         end
     end
 end)
-v488:AddToggle({
+v487:AddToggle({
     Name = "Auto Collect Egg",
     Description = "",
     Default = false,
@@ -8283,8 +8324,8 @@ spawn(function()
     end
 end)
 end
-local _ = v492:AddSection({"Fruits"})
-v492:AddToggle({
+local _ = v491:AddSection({"Fruits"})
+v491:AddToggle({
     Name = "Auto Random Fruits",
     Description = "",
     Default = false,
@@ -8301,7 +8342,7 @@ spawn(function()
         end
     end)
 end)
-v492:AddToggle({
+v491:AddToggle({
     Title = "Auto Store Fruits",
     Description = "",
     Value = false,
@@ -8371,7 +8412,7 @@ spawn(function()
         end
     end
 end)
-v492:AddToggle({
+v491:AddToggle({
     Name = "Teleport To Fruit Spawn",
     Description = "",
     Default = false,
@@ -8390,7 +8431,7 @@ spawn(function()
         end
     end
 end)
-v492:AddToggle({
+v491:AddToggle({
     Name = "Auto Teleport Fruits",
     Description = "",
     Default = false,
@@ -8409,7 +8450,7 @@ spawn(function()
         end
     end
 end)
-local _ = v492:AddSection({"Check Stock Fruits"})
+local _ = v491:AddSection({"Check Stock Fruits"})
 local function v1096(v1091)
     local v1092 = tostring(v1091)
     repeat
@@ -8462,7 +8503,7 @@ local function v1111()
     end
     return v1098
 end
-local v1112 = v492:AddParagraph({
+local v1112 = v491:AddParagraph({
     Title = "Stock",
     Content = "  ang   d    li   u..."
 })
@@ -9737,7 +9778,36 @@ v495:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "Reroll", "2")
     end
 })
-local _ = v496:AddSection({"Settings Farming"})
+
+local _ = v496:AddSection({"Join Server"})
+v496:AddTextBox({
+        Name = "Job ID",
+        PlaceholderText = "Paste the Job ID here...",
+        Callback = function(p215)
+            if p215 ~= "" then
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, p215)
+            end
+        end
+    })
+v496:AddButton({
+    Title = "Join Clipboard",
+    Description = "Join server from copied JobId",
+    Callback = function()
+        local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+
+        local jobId = tostring(getclipboard())
+
+        if jobId and jobId ~= "" then
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, jobId, LocalPlayer)
+        else
+            warn("Clipboard vazio ou inválido")
+        end
+    end
+})
+
+local _ = v496:AddSection({"Settings"})
 v496:AddParagraph({Title = "Unban Fast Attack - M1 Fruit", Content = "On:    "})
 loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
 v496:AddToggle({
@@ -9944,7 +10014,6 @@ spawn(function()
         end)
     end
 end)
-local _ = v496:AddSection({"Other"})
 local Lighting = game:GetService("Lighting")
 local FULLBRIGHT_SAVE_FILE = "fullbright_save.txt"
 
@@ -10121,7 +10190,6 @@ v496:AddButton({
         end
     end
 })
-local _ = v496:AddSection({"Server Hop"})
 v496:AddButton({
     Title = "Rejoin Server",
     Callback = function()
