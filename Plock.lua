@@ -8090,183 +8090,154 @@ v490:AddToggle({
     end
 })
 
-if World1 or World2 then
 local _ = v491:AddSection({"Raid Fruits"})
+
+-- =========================
+-- SELECT CHIP
+-- =========================
+_G.SelectChip = "Flame"
+_G.AutoBuyChip = false
+_G.StartRaid = false
+_G.Dungeon = false
+
 v491:AddDropdown({
     Name = "Select Chip",
     Options = {
-        "Flame",
-        "Ice",
-        "Sand",
-        "Dark",
-        "Light",
-        "Magma",
-        "Quake",
-        "Buddha",
-        "Spider",
-        "Phoenix",
-        "Lightning",
-        "Dough"
+        "Flame","Ice","Sand","Dark","Light","Magma",
+        "Quake","Buddha","Spider","Phoenix","Lightning","Dough"
     },
     Default = "Flame",
-    Callback = function(v1028)
-        _G.SelectChip = v1028
+    Callback = function(v)
+        _G.SelectChip = v
     end
 })
+
+-- =========================
+-- AUTO BUY CHIP
+-- =========================
 v491:AddToggle({
     Name = "Auto Buy Chip",
-    Description = "",
     Default = false,
-    Callback = function(v1029)
-        _G.AutoBuyChip = v1029
+    Callback = function(v)
+        _G.AutoBuyChip = v
     end
 })
+
 task.spawn(function()
-    while task.wait() do
+    while task.wait(1) do
         if _G.AutoBuyChip and _G.SelectChip then
             pcall(function()
-                local v1030 = {"RaidsNpc", "Select", _G.SelectChip}
-                game.ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(v1030))
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer(
+                    "RaidsNpc",
+                    "Select",
+                    _G.SelectChip
+                )
             end)
         end
     end
 end)
+
+-- =========================
+-- AUTO START RAID
+-- =========================
 v491:AddToggle({
     Name = "Auto Start Raid",
-    Description = "",
     Default = false,
-    Callback = function(v1031)
-        _G.StartRaid = v1031
+    Callback = function(v)
+        _G.StartRaid = v
     end
 })
+
 task.spawn(function()
-    while task.wait() do
+    while task.wait(1) do
         pcall(function()
-            if _G.StartRaid then
-                local l_LocalPlayer_15 = game.Players.LocalPlayer
-                if not l_LocalPlayer_15.PlayerGui.Main.Timer.Visible and not workspace._WorldOrigin.Locations:FindFirstChild("Island 1") and (l_LocalPlayer_15.Backpack:FindFirstChild("Special Microchip") or l_LocalPlayer_15.Character:FindFirstChild("Special Microchip")) then
-                    if not World2 then
-                        if World3 then
-                            game.ReplicatedStorage.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5075.5, 314.51, -3150.02))
-                            topos(CFrame.new(-5017.4, 314.84, -2823.01))
-                            game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSpawnPoint")
-                            fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-                        end
-                    else
-                        topos(CFrame.new(-6438.73, 250.64, -4501.5))
-                        game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSpawnPoint")
-                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                    end
-                end
+            if not _G.StartRaid then return end
+
+            local lp = game.Players.LocalPlayer
+            local gui = lp.PlayerGui:FindFirstChild("Main")
+            if not gui then return end
+
+            if gui.Timer.Visible then return end
+            if workspace._WorldOrigin.Locations:FindFirstChild("Island 1") then return end
+            if not (lp.Backpack:FindFirstChild("Special Microchip") or lp.Character:FindFirstChild("Special Microchip")) then return end
+
+            if World2 then
+                topos(CFrame.new(-6438.73, 250.64, -4501.5))
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSpawnPoint")
+                fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+            elseif World3 then
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer(
+                    "requestEntrance",
+                    Vector3.new(-5075.5, 314.51, -3150.02)
+                )
+                topos(CFrame.new(-5017.4, 314.84, -2823.01))
+                game.ReplicatedStorage.Remotes.CommF_:InvokeServer("SetSpawnPoint")
+                fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
             end
         end)
     end
 end)
+
+-- =========================
+-- AUTO FARM RAID NEXT ISLAND
+-- =========================
 v491:AddToggle({
     Name = "Auto Farm Raid Next Island",
-    Description = "",
     Default = false,
-    Callback = function(v1033)
-        _G.Dungeon = v1033
+    Callback = function(v)
+        _G.Dungeon = v
     end
 })
-local function v1040(v1034)
-    if workspace._WorldOrigin.Locations:FindFirstChild("Island " .. v1034) then
-        local v1035 = 4500
-        for _, v1037 in pairs(workspace._WorldOrigin.Locations:GetChildren()) do
-            if v1037.Name == "Island " .. v1034 and (v1037.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude < v1035 then
-                v1035 = (v1037.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+
+local function GetIsland(num)
+    local closest, dist = nil, math.huge
+    for _,v in pairs(workspace._WorldOrigin.Locations:GetChildren()) do
+        if v.Name == "Island "..num then
+            local mag = (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+            if mag < dist then
+                dist = mag
+                closest = v
             end
         end
-        for _, v1039 in pairs(workspace._WorldOrigin.Locations:GetChildren()) do
-            if v1039.Name == "Island " .. v1034 and (v1039.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= v1035 then
-                return v1039
-            end
+    end
+    return closest
+end
+
+local function GetNextIsland()
+    for _,i in ipairs({5,4,3,2,1}) do
+        local isl = GetIsland(i)
+        if isl and (isl.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 4500 then
+            return isl
         end
     end
 end
-local function v1043()
-    for _, v1042 in pairs({5, 4, 3, 2, 1}) do
-        if v1040(v1042) and (v1040(v1042).Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 4500 then
-            return v1040(v1042)
+
+local function FarmRaidEnemies()
+    for _,mob in pairs(workspace.Enemies:GetChildren()) do
+        if mob:FindFirstChild("HumanoidRootPart")
+        and mob:FindFirstChild("Humanoid")
+        and mob.Humanoid.Health > 0
+        and (mob.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 1000 then
+            repeat
+                task.wait(0.1)
+                if mob.Humanoid.Health > 0 then
+                    EquipWeapon(_G.SelectWeapon)
+                    topos(mob.HumanoidRootPart.CFrame * CFrame.new(0,30,0))
+                end
+            until mob.Humanoid.Health <= 0 or not _G.Dungeon
         end
     end
 end
-local function v1049()
-    local v1044 = {}
-    for _, v1046 in pairs(workspace.Enemies:GetChildren()) do
-        if v1046:FindFirstChild("HumanoidRootPart") and v1046:FindFirstChild("Humanoid") and v1046.Humanoid.Health > 0 and (v1046.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 1000 then
-            table.insert(v1044, v1046)
-        end
-    end
-    for _, v1048 in pairs(v1044) do
-        repeat
-            task.wait(0.1)
-            if v1048:FindFirstChild("Humanoid") and v1048.Humanoid.Health > 0 then
-                EquipWeapon(_G.SelectWeapon)
-                topos(v1048.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
-            end
-        until not v1048:FindFirstChild("Humanoid") or v1048.Humanoid.Health <= 0
-    end
-end
+
 task.spawn(function()
     while task.wait() do
         if _G.Dungeon then
-            v1049()
-            if v1043() then
-                topos(v1043().CFrame * CFrame.new(0, 60, 0))
+            FarmRaidEnemies()
+            local isl = GetNextIsland()
+            if isl then
+                topos(isl.CFrame * CFrame.new(0,60,0))
             end
         end
-    end
-end)
-v491:AddToggle({
-    Name = "Auto Get Fruit Low Beli",
-    Description = "",
-    Default = false,
-    Callback = function(v1050)
-        _G.Autofruit = v1050
-    end
-})
-spawn(function()
-    while wait(0.1) do
-        pcall(function()
-            if _G.Autofruit then
-                local v1051 = {[1] = "LoadFruit", [2] = "Rocket-Rocket"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1051))
-                local v1052 = {[1] = "LoadFruit", [2] = "Spin-Spin"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1052))
-                local v1053 = {[1] = "LoadFruit", [2] = "Chop-Chop"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1053))
-                local v1054 = {[1] = "LoadFruit", [2] = "Spring-Spring"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1054))
-                local v1055 = {[1] = "LoadFruit", [2] = "Bomb-Bomb"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1055))
-                local v1056 = {[1] = "LoadFruit", [2] = "Smoke-Smoke"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1056))
-                local v1057 = {[1] = "LoadFruit", [2] = "Spike-Spike"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1057))
-                local v1058 = {[1] = "LoadFruit", [2] = "Flame-Flame"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1058))
-                local v1059 = {[1] = "LoadFruit", [2] = "Falcon-Falcon"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1059))
-                local v1060 = {[1] = "LoadFruit", [2] = "Ice-Ice"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1060))
-                local v1061 = {[1] = "LoadFruit", [2] = "Sand-Sand"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1061))
-                local v1062 = {[1] = "LoadFruit", [2] = "Dark-Dark"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1062))
-                local v1063 = {[1] = "LoadFruit", [2] = "Ghost-Ghost"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1063))
-                local v1064 = {[1] = "LoadFruit", [2] = "Diamond-Diamond"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1064))
-                local v1065 = {[1] = "LoadFruit", [2] = "Light-Light"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1065))
-                local v1066 = {[1] = "LoadFruit", [2] = "Rubber-Rubber"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1066))
-                local v1067 = {[1] = "LoadFruit", [2] = "Creation-Creation"}
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v1067))
-            end
-        end)
     end
 end)
 
@@ -8323,7 +8294,6 @@ spawn(function()
         end
     end
 end)
-end
 local _ = v491:AddSection({"Fruits"})
 v491:AddToggle({
     Name = "Auto Random Fruits",
