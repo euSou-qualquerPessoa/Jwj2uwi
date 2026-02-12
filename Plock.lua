@@ -1,3 +1,20 @@
+task.spawn(function()
+    local HttpService = game:GetService("HttpService")
+    local Players = game:GetService("Players")
+    local LP = Players.LocalPlayer
+
+    repeat task.wait() until game:IsLoaded()
+    repeat task.wait() until LP and LP.Character
+
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
+    end)
+
+    if not success then
+        warn("Falha ao executar auto-load:", err)
+    end
+end)
+
 -- =========================
 -- REDZ HUB BOOTSTRAP
 -- =========================
@@ -9715,21 +9732,24 @@ v496:AddButton({
 })
 
 local _ = v496:AddSection({"Settings"})
--- RedzLib Toggle e Sistema Fast Attack
 local FastAttackEnabled = false
 local FastAttackThread = nil
+local Connections = {}
 
--- Função para parar o Fast Attack
 local function StopFastAttack()
     FastAttackEnabled = false
     if FastAttackThread then
         task.cancel(FastAttackThread)
         FastAttackThread = nil
     end
-    print("")
+    for _, connection in ipairs(Connections) do
+        pcall(function()
+            connection:Disconnect()
+        end)
+    end
+    Connections = {}
 end
 
--- Função para iniciar o Fast Attack
 local function StartFastAttack()
     if FastAttackEnabled then
         StopFastAttack()
@@ -9738,301 +9758,378 @@ local function StartFastAttack()
     FastAttackEnabled = true
     
     FastAttackThread = task.spawn(function()
-        -- Sistema Fast Attack Hybrid
-        local function FastMaxHybrid()
-            -- Inicialização dos remotes com proteção
-            local function InitializeRemotes()
-                local Remotes = {
-                    RegisterAttack = nil,
-                    RegisterHit = nil,
-                    ShootGunEvent = nil,
-                    Validator2 = nil
-                }
-                
-                -- Sistema de captura de remotes do segundo script
-                local function CaptureRemotes()
-                    local remotesFolder = game.ReplicatedStorage:FindFirstChild("Remotes")
-                    if remotesFolder then
-                        for _, remote in ipairs(remotesFolder:GetChildren()) do
-                            if remote:IsA("RemoteEvent") then
-                                local attrId = remote:GetAttribute("Id")
-                                if attrId then
-                                    -- Captura remotes específicos
-                                end
-                            end
-                        end
-                    end
-                end
-                
-                -- Monitora novos remotes
-                if game.ReplicatedStorage:FindFirstChild("Remotes") then
-                    game.ReplicatedStorage.Remotes.ChildAdded:Connect(function(child)
-                        if child:IsA("RemoteEvent") then
-                            local attrId = child:GetAttribute("Id")
-                            if attrId then
-                                -- Processa novo remote
-                            end
-                        end
-                    end)
-                end
-                
-                -- Configuração dos remotes principais
-                local Modules = game:GetService("ReplicatedStorage"):WaitForChild("Modules")
-                local Net = Modules:WaitForChild("Net")
-                
-                Remotes.RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
-                Remotes.RegisterHit = Net:WaitForChild("RE/RegisterHit")
-                Remotes.ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
-                
-                local ValidatorRemote = game.ReplicatedStorage:FindFirstChild("Remotes")
-                if ValidatorRemote then
-                    Remotes.Validator2 = ValidatorRemote:WaitForChild("Validator2")
-                end
-                
-                return Remotes
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting/refs/heads/main/FastMax.lua"))()
+        
+        local function GetBladeHits()
+            local targets = {}
+            local function GetDistance(v)
+                return (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
             end
-
-            -- Sistema de coleta de alvos otimizado
-            local function GetTargets(ignoreSelf, maxDistance)
-                if not FastAttackEnabled then return {} end
-                maxDistance = maxDistance or 65
-                local targets = {}
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if not character or not character:FindFirstChild("HumanoidRootPart") then return targets end
-                
-                local myPos = character.HumanoidRootPart.Position
-                local function ProcessFolder(folder, includePlayers)
-                    if not folder then return end
-                    for _, v in pairs(folder:GetChildren()) do
-                        if v ~= character and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-                            local humanoid = v.Humanoid
-                            if humanoid.Health > 0 and humanoid.MaxHealth > 0 then
-                                local distance = (v.HumanoidRootPart.Position - myPos).Magnitude
-                                if distance <= maxDistance then
-                                    table.insert(targets, v)
-                                end
-                            end
-                        end
-                    end
-                end
-                
-                ProcessFolder(workspace.Enemies)
-                ProcessFolder(workspace.Characters)
-                
-                return targets
-            end
-
-            -- Sistema de combo
-            local ComboSystem = {
-                currentCombo = 0,
-                lastAttackTime = 0,
-                resetTime = 0.3,
-                maxCombo = 4
-            }
             
-            function ComboSystem:GetNextCombo()
-                if not FastAttackEnabled then return 0 end
-                if tick() - self.lastAttackTime > self.resetTime then
-                    self.currentCombo = 0
-                end
-                self.currentCombo = (self.currentCombo % self.maxCombo) + 1
-                self.lastAttackTime = tick()
-                return self.currentCombo
-            end
-
-            -- Sistema de ataque principal (híbrido)
-            local function PerformAttack()
-                if not FastAttackEnabled then return end
-                
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if not character then return end
-                
-                local humanoid = character:FindFirstChild("Humanoid")
-                if not humanoid or humanoid.Health <= 0 then return end
-                
-                -- Verifica stun/busy
-                local stun = character:FindFirstChild("Stun")
-                local busy = character:FindFirstChild("Busy")
-                if (stun and stun.Value > 0) or (busy and busy.Value == true) then
-                    return
-                end
-                
-                local equipped = character:FindFirstChildOfClass("Tool")
-                if not equipped then return end
-                
-                local toolTip = equipped.ToolTip
-                if not table.find({"Melee", "Sword", "Blox Fruit", "Gun"}, toolTip) then return end
-                
-                local targets = GetTargets(true, 65)
-                if #targets == 0 then return end
-                
-                local combo = ComboSystem:GetNextCombo()
-                local Remotes = InitializeRemotes()
-                
-                -- Sistema de ataque baseado no tipo de arma
-                if toolTip == "Gun" then
-                    -- Sistema de tiro
-                    if equipped:FindFirstChild("Cooldown") and tick() - (player:GetAttribute("LastShot") or 0) < equipped.Cooldown.Value then
-                        return
-                    end
-                    
-                    local closestTarget = nil
-                    local minDistance = math.huge
-                    
-                    for _, target in ipairs(targets) do
-                        local dist = (target.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
-                        if dist < minDistance then
-                            minDistance = dist
-                            closestTarget = target
+            for _, part in pairs({game.Workspace.Enemies, game.Workspace.Characters}) do
+                for _, v in pairs(part:GetChildren()) do
+                    if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") then
+                        if GetDistance(v.HumanoidRootPart) < 60 then
+                            table.insert(targets, v)
                         end
                     end
-                    
-                    if closestTarget then
-                        player:SetAttribute("LastShot", tick())
-                        
-                        -- Tenta diferentes métodos de tiro
-                        local success, err = pcall(function()
-                            if Remotes.ShootGunEvent then
-                                Remotes.ShootGunEvent:FireServer(closestTarget.HumanoidRootPart.Position)
-                            elseif equipped:FindFirstChild("RemoteEvent") then
-                                equipped.RemoteEvent:FireServer("TAP", closestTarget.HumanoidRootPart.Position)
+                end
+            end
+        
+            return targets
+        end
+        
+        local function AttackAll()
+            if not FastAttackEnabled then return end
+            local player = game.Players.LocalPlayer
+            local character = player.Character
+            if not character then return end
+        
+            local equippedWeapon = character:FindFirstChild("EquippedWeapon")
+            if not equippedWeapon then return end
+        
+            local enemies = GetBladeHits()
+            if #enemies > 0 then
+                local netModule = game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("Net")
+                netModule:WaitForChild("RE/RegisterAttack"):FireServer(-math.huge)
+                
+                local args = {nil, {}}
+                for i, v in pairs(enemies) do
+                    if not args[1] then
+                        args[1] = v.Head
+                    end
+                    args[2][i] = {v, v.HumanoidRootPart}
+                end
+                
+                netModule:WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
+            end
+        end
+        
+        spawn(function()
+            while FastAttackEnabled and task.wait() do 
+                pcall(AttackAll) 
+            end
+        end)
+        
+        local Players = game:GetService("Players")
+        local RunService = game:GetService("RunService")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Workspace = game:GetService("Workspace")
+        local VirtualInputManager = game:GetService("VirtualInputManager")
+        
+        local Player = Players.LocalPlayer
+        local Modules = ReplicatedStorage:WaitForChild("Modules")
+        local Net = Modules:WaitForChild("Net")
+        local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
+        local RegisterHit = Net:WaitForChild("RE/RegisterHit")
+        local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
+        local GunValidator = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Validator2")
+        
+        local Config = {
+            AttackDistance = 65,
+            AttackMobs = true,
+            AttackPlayers = true,
+            AttackCooldown = 0.2,
+            ComboResetTime = 0.3,
+            MaxCombo = 4,
+            HitboxLimbs = {"RightLowerArm", "RightUpperArm", "LeftLowerArm", "LeftUpperArm", "RightHand", "LeftHand"},
+            AutoClickEnabled = true
+        }
+        
+        local FastAttack = {}
+        FastAttack.__index = FastAttack
+        
+        function FastAttack.new()
+            local self = setmetatable({
+                Debounce = 0,
+                ComboDebounce = 0,
+                ShootDebounce = 0,
+                M1Combo = 0,
+                EnemyRootPart = nil,
+                Connections = {},
+                Overheat = {Dragonstorm = {MaxOverheat = 3, Cooldown = 0, TotalOverheat = 0, Distance = 350, Shooting = false}},
+                ShootsPerTarget = {["Dual Flintlock"] = 2},
+                SpecialShoots = {["Skull Guitar"] = "TAP", ["Bazooka"] = "Position", ["Cannon"] = "Position", ["Dragonstorm"] = "Overheat"}
+            }, FastAttack)
+            
+            pcall(function()
+                self.CombatFlags = require(Modules.Flags).COMBAT_REMOTE_THREAD
+                self.ShootFunction = getupvalue(require(ReplicatedStorage.Controllers.CombatController).Attack, 9)
+                local LocalScript = Player:WaitForChild("PlayerScripts"):FindFirstChildOfClass("LocalScript")
+                if LocalScript and getsenv then
+                    self.HitFunction = getsenv(LocalScript)._G.SendHitsToServer
+                end
+            end)
+            
+            return self
+        end
+        
+        function FastAttack:IsEntityAlive(entity)
+            local humanoid = entity and entity:FindFirstChild("Humanoid")
+            return humanoid and humanoid.Health > 0
+        end
+        
+        function FastAttack:CheckStun(Character, Humanoid, ToolTip)
+            local Stun = Character:FindFirstChild("Stun")
+            local Busy = Character:FindFirstChild("Busy")
+            if Humanoid.Sit and (ToolTip == "Sword" or ToolTip == "Melee" or ToolTip == "Blox Fruit") then
+                return false
+            elseif Stun and Stun.Value > 0 or Busy and Busy.Value then
+                return false
+            end
+            return true
+        end
+        
+        function FastAttack:GetBladeHits(Character, Distance)
+            if not FastAttackEnabled then return {} end
+            local Position = Character:GetPivot().Position
+            local BladeHits = {}
+            Distance = Distance or Config.AttackDistance
+            
+            local function ProcessTargets(Folder, CanAttack)
+                for _, Enemy in ipairs(Folder:GetChildren()) do
+                    if Enemy ~= Character and self:IsEntityAlive(Enemy) then
+                        local BasePart = Enemy:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or Enemy:FindFirstChild("HumanoidRootPart")
+                        if BasePart and (Position - BasePart.Position).Magnitude <= Distance then
+                            if not self.EnemyRootPart then
+                                self.EnemyRootPart = BasePart
                             else
-                                -- Fallback para clique virtual
-                                local vim = game:GetService("VirtualInputManager")
-                                vim:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-                                task.wait(0.05)
-                                vim:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+                                table.insert(BladeHits, {Enemy, BasePart})
                             end
-                        end)
-                    end
-                elseif toolTip == "Blox Fruit" and equipped:FindFirstChild("LeftClickRemote") then
-                    -- Ataque de fruta
-                    local direction = (targets[1].HumanoidRootPart.Position - character.HumanoidRootPart.Position).Unit
-                    equipped.LeftClickRemote:FireServer(direction, combo)
-                else
-                    -- Ataque corpo a corpo (espada/melee)
-                    pcall(function()
-                        -- Primeiro registra o ataque
-                        Remotes.RegisterAttack:FireServer(0)
-                        
-                        -- Prepara os hits
-                        local args = {nil, {}}
-                        for i, v in ipairs(targets) do
-                            if not args[1] then
-                                args[1] = v:FindFirstChild("Head") or v.HumanoidRootPart
-                            end
-                            args[2][i] = {v, v.HumanoidRootPart}
                         end
-                        
-                        -- Adiciona assinatura única (do segundo script)
-                        local threadId = tostring(coroutine.running()):sub(11, 15)
-                        local timeCode = string.char(math.floor(workspace:GetServerTimeNow() / 10 % 10) + 48)
-                        args[4] = timeCode .. threadId
-                        
-                        -- Registra os hits
-                        Remotes.RegisterHit:FireServer(unpack(args))
-                    end)
-                end
-            end
-
-            -- Sistema de loop otimizado
-            local function StartAttackLoop()
-                while FastAttackEnabled do
-                    task.wait(0.15)  -- Cooldown entre ataques
-                    pcall(PerformAttack)
+                    end
                 end
             end
             
-            -- Sistema de captura de seeds (do segundo script)
-            local function SetupSeedCapture()
-                pcall(function()
-                    local combatController = require(game.ReplicatedStorage.Modules.Controllers.CombatController)
-                    if combatController and combatController.Attack then
-                        local shootFunction = getupvalue(combatController.Attack, 9)
-                        if shootFunction then
-                            -- Configura captura de validadores
-                            local seed = game.ReplicatedStorage.Modules.Net:FindFirstChild("seed")
-                            if seed and seed:IsA("RemoteFunction") then
-                                spawn(function()
-                                    while FastAttackEnabled do
-                                        task.wait(60)
-                                        pcall(function()
-                                            local seedValue = seed:InvokeServer()
-                                            if seedValue then
-                                                -- Armazena seed para uso futuro
-                                                setupvalue(shootFunction, 12, seedValue)
-                                            end
-                                        end)
-                                    end
-                                end)
-                            end
-                        end
-                    end
-                end)
+            if Config.AttackMobs then ProcessTargets(Workspace.Enemies) end
+            if Config.AttackPlayers then ProcessTargets(Workspace.Characters, true) end
+            
+            return BladeHits
+        end
+        
+        function FastAttack:GetClosestEnemy(Character, Distance)
+            local BladeHits = self:GetBladeHits(Character, Distance)
+            local Closest, MinDistance = nil, math.huge
+            
+            for _, Hit in ipairs(BladeHits) do
+                local Magnitude = (Character:GetPivot().Position - Hit[2].Position).Magnitude
+                if Magnitude < MinDistance then
+                    MinDistance = Magnitude
+                    Closest = Hit[2]
+                end
             end
-
-            -- Configuração de loops
-            local function Setup()
-                print("")
+            return Closest
+        end
+        
+        function FastAttack:GetCombo()
+            local Combo = (tick() - self.ComboDebounce) <= Config.ComboResetTime and self.M1Combo or 0
+            Combo = Combo >= Config.MaxCombo and 1 or Combo + 1
+            self.ComboDebounce = tick()
+            self.M1Combo = Combo
+            return Combo
+        end
+        
+        function FastAttack:ShootInTarget(TargetPosition)
+            if not FastAttackEnabled then return end
+            local Character = Player.Character
+            if not self:IsEntityAlive(Character) then return end
+            
+            local Equipped = Character:FindFirstChildOfClass("Tool")
+            if not Equipped or Equipped.ToolTip ~= "Gun" then return end
+            
+            local Cooldown = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or 0.3
+            if (tick() - self.ShootDebounce) < Cooldown then return end
+            
+            local ShootType = self.SpecialShoots[Equipped.Name] or "Normal"
+            if ShootType == "Position" or (ShootType == "TAP" and Equipped:FindFirstChild("RemoteEvent")) then
+                Equipped:SetAttribute("LocalTotalShots", (Equipped:GetAttribute("LocalTotalShots") or 0) + 1)
+                GunValidator:FireServer(self:GetValidator2())
                 
-                -- Inicializa captura de remotes
-                pcall(function()
-                    if game.ReplicatedStorage:FindFirstChild("Remotes") then
-                        local remotes = game.ReplicatedStorage.Remotes:GetChildren()
-                        for _, remote in ipairs(remotes) do
-                            if remote:IsA("RemoteEvent") then
-                                remote:GetAttribute("Id") -- Força cache do atributo
-                            end
-                        end
-                    end
-                end)
-                
-                -- Inicia loops
-                spawn(StartAttackLoop)
-                SetupSeedCapture()
-                
-                -- Loop de verificação de armas equipadas
-                spawn(function()
-                    while FastAttackEnabled do
-                        task.wait(0.5)
-                        pcall(function()
-                            local character = game.Players.LocalPlayer.Character
-                            if character then
-                                local equipped = character:FindFirstChildOfClass("Tool")
-                                if equipped then
-                                    -- Pré-carrega atributos
-                                    equipped:GetAttribute("WeaponType")
-                                    equipped:GetAttribute("Damage")
-                                end
-                            end
-                        end)
-                    end
-                end)
-                
-                print("")
+                if ShootType == "TAP" then
+                    Equipped.RemoteEvent:FireServer("TAP", TargetPosition)
+                else
+                    ShootGunEvent:FireServer(TargetPosition)
+                end
+                self.ShootDebounce = tick()
+            else
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+                task.wait(0.05)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+                self.ShootDebounce = tick()
             end
-
-            -- Inicia tudo
-            local success, err = pcall(Setup)
-            if not success then
-                warn("Erro ao iniciar Fast Attack: " .. tostring(err))
-                -- Tenta novamente após delay
-                task.wait(1)
-                if FastAttackEnabled then
-                    pcall(Setup)
+        end
+        
+        function FastAttack:GetValidator2()
+            local v1 = getupvalue(self.ShootFunction, 15)
+            local v2 = getupvalue(self.ShootFunction, 13)
+            local v3 = getupvalue(self.ShootFunction, 16)
+            local v4 = getupvalue(self.ShootFunction, 17)
+            local v5 = getupvalue(self.ShootFunction, 14)
+            local v6 = getupvalue(self.ShootFunction, 12)
+            local v7 = getupvalue(self.ShootFunction, 18)
+            
+            local v8 = v6 * v2
+            local v9 = (v5 * v2 + v6 * v1) % v3
+            v9 = (v9 * v3 + v8) % v4
+            v5 = math.floor(v9 / v3)
+            v6 = v9 - v5 * v3
+            v7 = v7 + 1
+            
+            setupvalue(self.ShootFunction, 15, v1)
+            setupvalue(self.ShootFunction, 13, v2)
+            setupvalue(self.ShootFunction, 16, v3)
+            setupvalue(self.ShootFunction, 17, v4)
+            setupvalue(self.ShootFunction, 14, v5)
+            setupvalue(self.ShootFunction, 12, v6)
+            setupvalue(self.ShootFunction, 18, v7)
+            
+            return math.floor(v9 / v4 * 16777215), v7
+        end
+        
+        function FastAttack:UseNormalClick(Character, Humanoid, Cooldown)
+            if not FastAttackEnabled then return end
+            self.EnemyRootPart = nil
+            local BladeHits = self:GetBladeHits(Character)
+            
+            if self.EnemyRootPart then
+                RegisterAttack:FireServer(Cooldown)
+                if self.CombatFlags and self.HitFunction then
+                    self.HitFunction(self.EnemyRootPart, BladeHits)
+                else
+                    RegisterHit:FireServer(self.EnemyRootPart, BladeHits)
                 end
             end
         end
-
-        -- Executa o script híbrido
-        FastMaxHybrid()
+        
+        function FastAttack:UseFruitM1(Character, Equipped, Combo)
+            if not FastAttackEnabled then return end
+            local Targets = self:GetBladeHits(Character)
+            if not Targets[1] then return end
+            
+            local Direction = (Targets[1][2].Position - Character:GetPivot().Position).Unit
+            Equipped.LeftClickRemote:FireServer(Direction, Combo)
+        end
+        
+        function FastAttack:Attack()
+            if not FastAttackEnabled or not Config.AutoClickEnabled or (tick() - self.Debounce) < Config.AttackCooldown then return end
+            local Character = Player.Character
+            if not Character or not self:IsEntityAlive(Character) then return end
+            
+            local Humanoid = Character.Humanoid
+            local Equipped = Character:FindFirstChildOfClass("Tool")
+            if not Equipped then return end
+            
+            local ToolTip = Equipped.ToolTip
+            if not table.find({"Melee", "Blox Fruit", "Sword", "Gun"}, ToolTip) then return end
+            
+            local Cooldown = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or Config.AttackCooldown
+            if not self:CheckStun(Character, Humanoid, ToolTip) then return end
+            
+            local Combo = self:GetCombo()
+            Cooldown = Cooldown + (Combo >= Config.MaxCombo and 0.05 or 0)
+            self.Debounce = Combo >= Config.MaxCombo and ToolTip ~= "Gun" and (tick() + 0.05) or tick()
+            
+            if ToolTip == "Blox Fruit" and Equipped:FindFirstChild("LeftClickRemote") then
+                self:UseFruitM1(Character, Equipped, Combo)
+            elseif ToolTip == "Gun" then
+                local Target = self:GetClosestEnemy(Character, 120)
+                if Target then
+                    self:ShootInTarget(Target.Position)
+                end
+            else
+                self:UseNormalClick(Character, Humanoid, Cooldown)
+            end
+        end
+        
+        local AttackInstance = FastAttack.new()
+        if FastAttackEnabled then
+            table.insert(Connections, RunService.Stepped:Connect(function()
+                if FastAttackEnabled then
+                    pcall(function() AttackInstance:Attack() end)
+                end
+            end))
+        end
+        
+        for _, v in pairs(getgc(true)) do
+            if typeof(v) == "function" and iscclosure(v) and FastAttackEnabled then
+                local name = debug.getinfo(v).name
+                if name == "Attack" or name == "attack" or name == "RegisterHit" then
+                    pcall(function()
+                        hookfunction(v, function(...)
+                            if FastAttackEnabled then
+                                pcall(function() AttackInstance:Attack() end)
+                            end
+                            return v(...)
+                        end)
+                    end)
+                end
+            end
+        end
+        
+        local Modules = game.ReplicatedStorage.Modules
+        local Net = Modules.Net
+        local Register_Hit, Register_Attack = Net:WaitForChild("RE/RegisterHit"), Net:WaitForChild("RE/RegisterAttack")
+        local Funcs = {}
+        
+        function GetAllBladeHits()
+            if not FastAttackEnabled then return {} end
+            bladehits = {}
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 
+                and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 65 then
+                    table.insert(bladehits, v)
+                end
+            end
+            return bladehits
+        end
+        
+        function Getplayerhit()
+            if not FastAttackEnabled then return {} end
+            bladehits = {}
+            for _, v in pairs(workspace.Characters:GetChildren()) do
+                if v.Name ~= game.Players.LocalPlayer.Name and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 
+                and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 65 then
+                    table.insert(bladehits, v)
+                end
+            end
+            return bladehits
+        end
+        
+        function Funcs:Attack()
+            if not FastAttackEnabled then return end
+            local bladehits = {}
+            for r,v in pairs(GetAllBladeHits()) do
+                table.insert(bladehits, v)
+            end
+            for r,v in pairs(Getplayerhit()) do
+                table.insert(bladehits, v)
+            end
+            if #bladehits == 0 then return end
+            local args = {
+                [1] = nil;
+                [2] = {},
+                [4] = "078da341"
+            }
+            for r, v in pairs(bladehits) do
+                Register_Attack:FireServer(0)
+                if not args[1] then
+                    args[1] = v.Head
+                end
+                args[2][r] = {
+                    [1] = v,
+                    [2] = v.HumanoidRootPart
+                }
+            end
+            Register_Hit:FireServer(unpack(args))
+        end
+        
+        spawn(function()
+            while FastAttackEnabled and task.wait(0.1) do
+                pcall(Funcs.Attack, Funcs)
+            end
+        end)
     end)
 end
-
--- Configuração do Toggle RedzLib
-local TabMain = --[[ Sua Tab Main da RedzLib aqui ]]
 
 v496:AddToggle({
     Name = "Fast Attack",
@@ -10046,26 +10143,15 @@ v496:AddToggle({
     end
 })
 
--- Função para verificar se está ativo (útil para outros scripts)
-local function IsFastAttackEnabled()
-    return FastAttackEnabled
-end
-
--- Função para reativar se desativado acidentalmente
-local function EnsureFastAttackRunning()
-    if FastAttackEnabled and not FastAttackThread then
-        StartFastAttack()
-    end
-end
-
--- Monitora para manter o script rodando
 spawn(function()
     while task.wait(5) do
-        EnsureFastAttackRunning()
+        if FastAttackEnabled and not FastAttackThread then
+            StartFastAttack()
+        end
     end
 end)
 v496:AddToggle({
-    Name = "Bring Mobs",
+    Name = "Bring Mod",
     Description = "",
     Default = true,
     Callback = function(v1165)
