@@ -3736,74 +3736,11 @@ local v466 = vu32:MakeWindow({
     SaveFolder = "Redz | redz lib v5.lua"
 })
 
-local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
-
-local parentGui = (gethui and gethui()) or Players.LocalPlayer:WaitForChild("PlayerGui")
-
-local l_ScreenGui_0 = Instance.new("ScreenGui")
-l_ScreenGui_0.Name = "ControlGUI"
-l_ScreenGui_0.ResetOnSpawn = false
-l_ScreenGui_0.Parent = parentGui
-
-local l_ImageButton_0 = Instance.new("ImageButton")
-l_ImageButton_0.Size = UDim2.new(0, 35, 0, 35)
-l_ImageButton_0.Position = UDim2.new(0.15, 0, 0.15, 0)
-l_ImageButton_0.Image = "rbxassetid://15298567397"
-l_ImageButton_0.BackgroundTransparency = 1
-l_ImageButton_0.Parent = l_ScreenGui_0
-
-local l_UICorner_0 = Instance.new("UICorner")
-l_UICorner_0.CornerRadius = UDim.new(0.25, 0)
-l_UICorner_0.Parent = l_ImageButton_0
-
-local v473 = true
-local v474 = false
-local v475 = nil
-local v476 = nil
-local v477 = nil
-
-local function v480(v478)
-    local v479 = v478.Position - v476
-    l_ImageButton_0.Position = UDim2.new(
-        v477.X.Scale,
-        v477.X.Offset + v479.X,
-        v477.Y.Scale,
-        v477.Y.Offset + v479.Y
-    )
-end
-
-l_ImageButton_0.InputBegan:Connect(function(v481)
-    if v481.UserInputType == Enum.UserInputType.Touch or v481.UserInputType == Enum.UserInputType.MouseButton1 then
-        v474 = true
-        v476 = v481.Position
-        v477 = l_ImageButton_0.Position
-        v481.Changed:Connect(function()
-            if v481.UserInputState == Enum.UserInputState.End then
-                v474 = false
-            end
-        end)
-    end
-end)
-
-l_ImageButton_0.InputChanged:Connect(function(v482)
-    if v482.UserInputType == Enum.UserInputType.Touch or v482.UserInputType == Enum.UserInputType.MouseMovement then
-        v475 = v482
-    end
-end)
-
-UIS.InputChanged:Connect(function(v483)
-    if v474 and v483 == v475 then
-        v480(v483)
-    end
-end)
-
-l_ImageButton_0.MouseButton1Click:Connect(function()
-    v473 = not v473
-    if v466 then
-        v466:Minimize(not v473)
-    end
-end)
+v466:AddMinimizeButton({
+    Button = { Image = "rbxassetid://15298567397", BackgroundTransparency = 0 },
+    Size = UDim2.new(0, 35, 0, 35),
+    Corner = { CornerRadius = UDim.new(0.25, 0) },
+})
 
 local v484 = v466:MakeTab({"Discord", "info"})
 local v485 = v466:MakeTab({"Farm", "home"})
@@ -9778,10 +9715,357 @@ v496:AddButton({
 })
 
 local _ = v496:AddSection({"Settings"})
-v496:AddParagraph({Title = "Unban Fast Attack - M1 Fruit", Content = "On:    "})
-loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
+-- RedzLib Toggle e Sistema Fast Attack
+local FastAttackEnabled = false
+local FastAttackThread = nil
+
+-- Função para parar o Fast Attack
+local function StopFastAttack()
+    FastAttackEnabled = false
+    if FastAttackThread then
+        task.cancel(FastAttackThread)
+        FastAttackThread = nil
+    end
+    print("")
+end
+
+-- Função para iniciar o Fast Attack
+local function StartFastAttack()
+    if FastAttackEnabled then
+        StopFastAttack()
+    end
+    
+    FastAttackEnabled = true
+    
+    FastAttackThread = task.spawn(function()
+        -- Sistema Fast Attack Hybrid
+        local function FastMaxHybrid()
+            -- Inicialização dos remotes com proteção
+            local function InitializeRemotes()
+                local Remotes = {
+                    RegisterAttack = nil,
+                    RegisterHit = nil,
+                    ShootGunEvent = nil,
+                    Validator2 = nil
+                }
+                
+                -- Sistema de captura de remotes do segundo script
+                local function CaptureRemotes()
+                    local remotesFolder = game.ReplicatedStorage:FindFirstChild("Remotes")
+                    if remotesFolder then
+                        for _, remote in ipairs(remotesFolder:GetChildren()) do
+                            if remote:IsA("RemoteEvent") then
+                                local attrId = remote:GetAttribute("Id")
+                                if attrId then
+                                    -- Captura remotes específicos
+                                end
+                            end
+                        end
+                    end
+                end
+                
+                -- Monitora novos remotes
+                if game.ReplicatedStorage:FindFirstChild("Remotes") then
+                    game.ReplicatedStorage.Remotes.ChildAdded:Connect(function(child)
+                        if child:IsA("RemoteEvent") then
+                            local attrId = child:GetAttribute("Id")
+                            if attrId then
+                                -- Processa novo remote
+                            end
+                        end
+                    end)
+                end
+                
+                -- Configuração dos remotes principais
+                local Modules = game:GetService("ReplicatedStorage"):WaitForChild("Modules")
+                local Net = Modules:WaitForChild("Net")
+                
+                Remotes.RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
+                Remotes.RegisterHit = Net:WaitForChild("RE/RegisterHit")
+                Remotes.ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
+                
+                local ValidatorRemote = game.ReplicatedStorage:FindFirstChild("Remotes")
+                if ValidatorRemote then
+                    Remotes.Validator2 = ValidatorRemote:WaitForChild("Validator2")
+                end
+                
+                return Remotes
+            end
+
+            -- Sistema de coleta de alvos otimizado
+            local function GetTargets(ignoreSelf, maxDistance)
+                if not FastAttackEnabled then return {} end
+                maxDistance = maxDistance or 65
+                local targets = {}
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character or not character:FindFirstChild("HumanoidRootPart") then return targets end
+                
+                local myPos = character.HumanoidRootPart.Position
+                local function ProcessFolder(folder, includePlayers)
+                    if not folder then return end
+                    for _, v in pairs(folder:GetChildren()) do
+                        if v ~= character and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
+                            local humanoid = v.Humanoid
+                            if humanoid.Health > 0 and humanoid.MaxHealth > 0 then
+                                local distance = (v.HumanoidRootPart.Position - myPos).Magnitude
+                                if distance <= maxDistance then
+                                    table.insert(targets, v)
+                                end
+                            end
+                        end
+                    end
+                end
+                
+                ProcessFolder(workspace.Enemies)
+                ProcessFolder(workspace.Characters)
+                
+                return targets
+            end
+
+            -- Sistema de combo
+            local ComboSystem = {
+                currentCombo = 0,
+                lastAttackTime = 0,
+                resetTime = 0.3,
+                maxCombo = 4
+            }
+            
+            function ComboSystem:GetNextCombo()
+                if not FastAttackEnabled then return 0 end
+                if tick() - self.lastAttackTime > self.resetTime then
+                    self.currentCombo = 0
+                end
+                self.currentCombo = (self.currentCombo % self.maxCombo) + 1
+                self.lastAttackTime = tick()
+                return self.currentCombo
+            end
+
+            -- Sistema de ataque principal (híbrido)
+            local function PerformAttack()
+                if not FastAttackEnabled then return end
+                
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then return end
+                
+                local humanoid = character:FindFirstChild("Humanoid")
+                if not humanoid or humanoid.Health <= 0 then return end
+                
+                -- Verifica stun/busy
+                local stun = character:FindFirstChild("Stun")
+                local busy = character:FindFirstChild("Busy")
+                if (stun and stun.Value > 0) or (busy and busy.Value == true) then
+                    return
+                end
+                
+                local equipped = character:FindFirstChildOfClass("Tool")
+                if not equipped then return end
+                
+                local toolTip = equipped.ToolTip
+                if not table.find({"Melee", "Sword", "Blox Fruit", "Gun"}, toolTip) then return end
+                
+                local targets = GetTargets(true, 65)
+                if #targets == 0 then return end
+                
+                local combo = ComboSystem:GetNextCombo()
+                local Remotes = InitializeRemotes()
+                
+                -- Sistema de ataque baseado no tipo de arma
+                if toolTip == "Gun" then
+                    -- Sistema de tiro
+                    if equipped:FindFirstChild("Cooldown") and tick() - (player:GetAttribute("LastShot") or 0) < equipped.Cooldown.Value then
+                        return
+                    end
+                    
+                    local closestTarget = nil
+                    local minDistance = math.huge
+                    
+                    for _, target in ipairs(targets) do
+                        local dist = (target.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+                        if dist < minDistance then
+                            minDistance = dist
+                            closestTarget = target
+                        end
+                    end
+                    
+                    if closestTarget then
+                        player:SetAttribute("LastShot", tick())
+                        
+                        -- Tenta diferentes métodos de tiro
+                        local success, err = pcall(function()
+                            if Remotes.ShootGunEvent then
+                                Remotes.ShootGunEvent:FireServer(closestTarget.HumanoidRootPart.Position)
+                            elseif equipped:FindFirstChild("RemoteEvent") then
+                                equipped.RemoteEvent:FireServer("TAP", closestTarget.HumanoidRootPart.Position)
+                            else
+                                -- Fallback para clique virtual
+                                local vim = game:GetService("VirtualInputManager")
+                                vim:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+                                task.wait(0.05)
+                                vim:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+                            end
+                        end)
+                    end
+                elseif toolTip == "Blox Fruit" and equipped:FindFirstChild("LeftClickRemote") then
+                    -- Ataque de fruta
+                    local direction = (targets[1].HumanoidRootPart.Position - character.HumanoidRootPart.Position).Unit
+                    equipped.LeftClickRemote:FireServer(direction, combo)
+                else
+                    -- Ataque corpo a corpo (espada/melee)
+                    pcall(function()
+                        -- Primeiro registra o ataque
+                        Remotes.RegisterAttack:FireServer(0)
+                        
+                        -- Prepara os hits
+                        local args = {nil, {}}
+                        for i, v in ipairs(targets) do
+                            if not args[1] then
+                                args[1] = v:FindFirstChild("Head") or v.HumanoidRootPart
+                            end
+                            args[2][i] = {v, v.HumanoidRootPart}
+                        end
+                        
+                        -- Adiciona assinatura única (do segundo script)
+                        local threadId = tostring(coroutine.running()):sub(11, 15)
+                        local timeCode = string.char(math.floor(workspace:GetServerTimeNow() / 10 % 10) + 48)
+                        args[4] = timeCode .. threadId
+                        
+                        -- Registra os hits
+                        Remotes.RegisterHit:FireServer(unpack(args))
+                    end)
+                end
+            end
+
+            -- Sistema de loop otimizado
+            local function StartAttackLoop()
+                while FastAttackEnabled do
+                    task.wait(0.15)  -- Cooldown entre ataques
+                    pcall(PerformAttack)
+                end
+            end
+            
+            -- Sistema de captura de seeds (do segundo script)
+            local function SetupSeedCapture()
+                pcall(function()
+                    local combatController = require(game.ReplicatedStorage.Modules.Controllers.CombatController)
+                    if combatController and combatController.Attack then
+                        local shootFunction = getupvalue(combatController.Attack, 9)
+                        if shootFunction then
+                            -- Configura captura de validadores
+                            local seed = game.ReplicatedStorage.Modules.Net:FindFirstChild("seed")
+                            if seed and seed:IsA("RemoteFunction") then
+                                spawn(function()
+                                    while FastAttackEnabled do
+                                        task.wait(60)
+                                        pcall(function()
+                                            local seedValue = seed:InvokeServer()
+                                            if seedValue then
+                                                -- Armazena seed para uso futuro
+                                                setupvalue(shootFunction, 12, seedValue)
+                                            end
+                                        end)
+                                    end
+                                end)
+                            end
+                        end
+                    end
+                end)
+            end
+
+            -- Configuração de loops
+            local function Setup()
+                print("")
+                
+                -- Inicializa captura de remotes
+                pcall(function()
+                    if game.ReplicatedStorage:FindFirstChild("Remotes") then
+                        local remotes = game.ReplicatedStorage.Remotes:GetChildren()
+                        for _, remote in ipairs(remotes) do
+                            if remote:IsA("RemoteEvent") then
+                                remote:GetAttribute("Id") -- Força cache do atributo
+                            end
+                        end
+                    end
+                end)
+                
+                -- Inicia loops
+                spawn(StartAttackLoop)
+                SetupSeedCapture()
+                
+                -- Loop de verificação de armas equipadas
+                spawn(function()
+                    while FastAttackEnabled do
+                        task.wait(0.5)
+                        pcall(function()
+                            local character = game.Players.LocalPlayer.Character
+                            if character then
+                                local equipped = character:FindFirstChildOfClass("Tool")
+                                if equipped then
+                                    -- Pré-carrega atributos
+                                    equipped:GetAttribute("WeaponType")
+                                    equipped:GetAttribute("Damage")
+                                end
+                            end
+                        end)
+                    end
+                end)
+                
+                print("")
+            end
+
+            -- Inicia tudo
+            local success, err = pcall(Setup)
+            if not success then
+                warn("Erro ao iniciar Fast Attack: " .. tostring(err))
+                -- Tenta novamente após delay
+                task.wait(1)
+                if FastAttackEnabled then
+                    pcall(Setup)
+                end
+            end
+        end
+
+        -- Executa o script híbrido
+        FastMaxHybrid()
+    end)
+end
+
+-- Configuração do Toggle RedzLib
+local TabMain = --[[ Sua Tab Main da RedzLib aqui ]]
+
 v496:AddToggle({
-    Name = "Bring Mod",
+    Name = "Fast Attack",
+    Default = true,
+    Callback = function(Value)
+        if Value then
+            StartFastAttack()
+        else
+            StopFastAttack()
+        end
+    end
+})
+
+-- Função para verificar se está ativo (útil para outros scripts)
+local function IsFastAttackEnabled()
+    return FastAttackEnabled
+end
+
+-- Função para reativar se desativado acidentalmente
+local function EnsureFastAttackRunning()
+    if FastAttackEnabled and not FastAttackThread then
+        StartFastAttack()
+    end
+end
+
+-- Monitora para manter o script rodando
+spawn(function()
+    while task.wait(5) do
+        EnsureFastAttackRunning()
+    end
+end)
+v496:AddToggle({
+    Name = "Bring Mobs",
     Description = "",
     Default = true,
     Callback = function(v1165)
