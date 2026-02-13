@@ -1,20 +1,3 @@
-task.spawn(function()
-    local HttpService = game:GetService("HttpService")
-    local Players = game:GetService("Players")
-    local LP = Players.LocalPlayer
-
-    repeat task.wait() until game:IsLoaded()
-    repeat task.wait() until LP and LP.Character
-
-    local success, err = pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
-    end)
-
-    if not success then
-        warn("Falha ao executar auto-load:", err)
-    end
-end)
-
 -- =========================
 -- REDZ HUB BOOTSTRAP
 -- =========================
@@ -3765,6 +3748,7 @@ local v487 = v466:MakeTab({"Quest | Items", "swords"})
 local v486 = v466:MakeTab({"Auto Fishing", "rbxassetid://127664059821666"})
 local v489 = v466:MakeTab({"Sea Event", "waves"})
 local v490 = v466:MakeTab({"Race V4", "crown"})
+local v498 = v466:MakeTab({"Islands", "palmtree"})
 local v491 = v466:MakeTab({"Raid/Fruits", "cherry"})
 local v497 = v466:MakeTab({"Stats", "Signal"})
 local v493 = v466:MakeTab({"Teleport", "locate"})
@@ -6742,637 +6726,6 @@ if World3 then
         end)
     end
 end
-v487:AddButton({
-    Title = "Tween Dragon Dojo",
-    Value = false,
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5661.53, 1013.09, -334.96))
-        topos(CFrame.new(5841.29, 1208.32, 884.31))
-    end
-})
-v487:AddToggle({
-    Name = "Auto Dragon Huntery",
-    Description = "",
-    Default = false,
-    Callback = function(v822)
-        _G.FarmBlazeEM = v822
-        StopTween(_G.FarmBlazeEM)
-    end
-})
-function checkQuesta()
-    local v823 = {[1] = {Context = "Check"}}
-    local v824 = nil
-    pcall(function()
-        local v825 = {[1] = {Context = "RequestQuest"}}
-        game:GetService("ReplicatedStorage").Modules.Net["RF/DragonHunter"]:InvokeServer(unpack(v825))
-    end)
-    local _, _ = pcall(function()
-        v824 = game:GetService("ReplicatedStorage").Modules.Net["RF/DragonHunter"]:InvokeServer(unpack(v823))
-    end)
-    local v828 = false
-    local v829 = nil
-    local v830 = nil
-    local v831 = nil
-    if v824 and v824.Text then
-        v828 = true
-        local l_Text_1 = v824.Text
-        if string.find(l_Text_1, "Defeat") then
-            v831 = 1
-            v830 = tonumber(string.sub(l_Text_1, 8, 9))
-            for _, v834 in pairs({"Hydra Enforcer", "Venomous Assailant"}) do
-                if string.find(l_Text_1, v834) then
-                    v829 = v834
-                    break
-                end
-            end
-        elseif string.find(l_Text_1, "Destroy") then
-            v831 = 2
-            v830 = 10
-        end
-    end
-    return v828, v829, v830, v831
-end
-function BackTODoJo()
-    for _, v836 in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Notifications:GetChildren()) do
-        if v836.Name == "NotificationTemplate" and string.find(v836.Text, "Head back to the Dojo to complete more tasks") then
-            return true
-        end
-    end
-    return false
-end
-function DragonMobClear(v837, v838, v839)
-    if not workspace.Enemies:FindFirstChild(v838) then
-        if v839 then
-            topos(v839)
-        end
-    else
-        for _, v841 in pairs(workspace.Enemies:GetChildren()) do
-            if v841.Name == v838 and Attack.Alive(v841) and v837 then
-                Attack.Kill(v841, v837)
-            end
-        end
-    end
-end
-spawn(function()
-    while task.wait() do
-        if _G.FarmBlazeEM then
-            pcall(function()
-                local v842, v843, _, v845 = checkQuesta()
-                if not v842 or BackTODoJo() then
-                    topos(CFrame.new(5813, 1208, 884))
-                    DragonMobClear(false, nil, nil)
-                elseif v845 ~= 1 then
-                    if v845 == 2 then
-                        local l_FirstChild_5 = workspace.Map.Waterfall.IslandModel:FindFirstChild("Meshes/bambootree", true)
-                        do
-                            local l_l_FirstChild_5_0 = l_FirstChild_5
-                            if l_l_FirstChild_5_0 then
-                                repeat
-                                    task.wait()
-                                    spawn(function()
-                                        topos(l_l_FirstChild_5_0.CFrame * CFrame.new(4, 0, 0))
-                                    end)
-                                    if (l_l_FirstChild_5_0.Position - Root.Position).Magnitude <= 200 then
-                                        MousePos = l_l_FirstChild_5_0.Position
-                                        Useskills("Melee", "Z")
-                                        Useskills("Melee", "X")
-                                        Useskills("Melee", "C")
-                                        task.wait(0.5)
-                                        Useskills("Sword", "Z")
-                                        Useskills("Sword", "X")
-                                        task.wait(0.5)
-                                        Useskills("Blox Fruit", "Z")
-                                        Useskills("Blox Fruit", "X")
-                                        Useskills("Blox Fruit", "C")
-                                        task.wait(0.5)
-                                        Useskills("Gun", "Z")
-                                        Useskills("Gun", "X")
-                                    end
-                                until not _G.FarmBlazeEM or not v842 or BackTODoJo()
-                            end
-                        end
-                    end
-                elseif v843 == "Hydra Enforcer" or v843 == "Venomous Assailant" then
-                    repeat
-                        task.wait()
-                        DragonMobClear(true, v843, CFrame.new(4620.61, 1002.29, 399.08))
-                    until not _G.FarmBlazeEM or not v842 or BackTODoJo()
-                end
-            end)
-        end
-    end
-end)
-spawn(function()
-    while task.wait(0.1) do
-        if _G.FarmBlazeEM then
-            pcall(function()
-                if workspace:FindFirstChild("EmberTemplate") and workspace.EmberTemplate:FindFirstChild("Part") then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.EmberTemplate.Part.CFrame
-                end
-            end)
-        end
-    end
-end)
-local _ = v487:AddSection({"Volcanic Island"})
-v487:AddButton({
-    Title = "Craft Volcanic Magnet",
-    Value = false,
-    Callback = function()
-        local v849 = {[1] = "CraftItem", [2] = "Craft", [3] = "Volcanic Magnet"}
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v849))
-    end
-})
-local v850 = v487:AddParagraph({Title = "Check Prehistoric Island", Content = "Loading..."})
-task.spawn(function()
-    while task.wait(1) do
-        pcall(function()
-            if game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland") then
-                v850:Set("Prehistoric Island Spawning    ")
-            else
-                v850:Set("Prehistoric Island Not Spawn    ")
-            end
-        end)
-    end
-end)
-v487:AddToggle({
-    Name = "Auto Find Prehistoric",
-    Description = "",
-    Default = false,
-    Callback = function(v851)
-        _G.Nocliprock = v851
-        StopTween(_G.Nocliprock)
-    end
-})
-local v852 = {}
-local l_Players_0 = game:GetService("Players")
-local l_RunService_0 = game:GetService("RunService")
-local l_VirtualInputManager_3 = game:GetService("VirtualInputManager")
-local l_Workspace_1 = game:GetService("Workspace")
-local v857 = 350
-l_RunService_0.RenderStepped:Connect(function()
-    for v858, v859 in pairs(v852) do
-        if v859 and v859.Parent and v859.Name == "VehicleSeat" and not v859.Occupant then
-            v852[v858] = v859
-        end
-    end
-end)
-local _ = function()
-    for _, v861 in pairs(v852) do
-        if v861 and v861.Parent and v861.Name == "VehicleSeat" and not v861.Occupant then
-            topos(v861.CFrame)
-        end
-    end
-end
-local v863 = false
-local v864 = false
-l_RunService_0.RenderStepped:Connect(function()
-    if _G.AutoFindPrehistoric then
-        local l_Character_8 = l_Players_0.LocalPlayer.Character
-        if l_Character_8 and l_Character_8:FindFirstChild("Humanoid") then
-            local function v868()
-                if not v863 then
-                    v863 = true
-                    for _, v867 in pairs(v852) do
-                        if v867 and v867.Parent and v867.Name == "VehicleSeat" and not v867.Occupant then
-                            topos(v867.CFrame)
-                            break
-                        end
-                    end
-                    v863 = false
-                    return 
-                else
-                    return 
-                end
-            end
-            local l_Humanoid_1 = l_Character_8.Humanoid
-            local v870 = false
-            local v871 = nil
-            for _, v873 in pairs(l_Workspace_1.Boats:GetChildren()) do
-                local l_VehicleSeat_0 = v873:FindFirstChild("VehicleSeat")
-                if l_VehicleSeat_0 and l_VehicleSeat_0.Occupant == l_Humanoid_1 then
-                    v870 = true
-                    v871 = l_VehicleSeat_0
-                    v852[v873.Name] = l_VehicleSeat_0
-                elseif l_VehicleSeat_0 and l_VehicleSeat_0.Occupant == "Name" then
-                    v868()
-                end
-            end
-            if v870 then
-                v871.MaxSpeed = v857
-                v871.CFrame = CFrame.new(Vector3.new(v871.Position.X, v871.Position.Y, v871.Position.Z)) * v871.CFrame.Rotation
-                l_VirtualInputManager_3:SendKeyEvent(true, "W", false, game)
-                for _, v876 in pairs(l_Workspace_1.Boats:GetDescendants()) do
-                    if v876:IsA("BasePart") then
-                        v876.CanCollide = false
-                    end
-                end
-                for _, v878 in pairs(l_Character_8:GetDescendants()) do
-                    if v878:IsA("BasePart") then
-                        v878.CanCollide = false
-                    end
-                end
-                for _, v880 in ipairs({
-                    "ShipwreckIsland",
-                    "SandIsland",
-                    "TreeIsland",
-                    "TinyIsland",
-                    "MysticIsland",
-                    "KitsuneIsland",
-                    "FrozenDimension"
-                }) do
-                    local l_FirstChild_6 = l_Workspace_1.Map:FindFirstChild(v880)
-                    if l_FirstChild_6 and l_FirstChild_6:IsA("Model") then
-                        l_FirstChild_6:Destroy()
-                    end
-                end
-                if l_Workspace_1.Map:FindFirstChild("PrehistoricIsland") then
-                    l_VirtualInputManager_3:SendKeyEvent(false, "W", false, game)
-                    _G.AutoFindPrehistoric = false
-                    if not v864 then
-                        v864 = true
-                    end
-                    return 
-                else
-                    return 
-                end
-            else
-                return 
-            end
-        else
-            return 
-        end
-    else
-        v864 = false
-        return 
-    end
-end)
-v487:AddToggle({
-    Name = "Auto Tween Prehistoric Island",
-    Description = "",
-    Default = false,
-    Callback = function(v882)
-        _G.TweenVolcano = v882
-        StopTween(_G.TweenVolcano)
-    end
-})
-spawn(function()
-    local v883 = nil
-    while not v883 do
-        v883 = game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland")
-        wait()
-    end
-    while wait() do
-        if _G.TweenVolcano then
-            local l_PrehistoricIsland_0 = game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland")
-            if l_PrehistoricIsland_0 then
-                local v885 = l_PrehistoricIsland_0:FindFirstChild("Core") and l_PrehistoricIsland_0.Core:FindFirstChild("PrehistoricRelic")
-                local v886 = v885 and v885:FindFirstChild("Skull")
-                if v886 then
-                    TP1(CFrame.new(v886.Position))
-                    _G.TweenVolcano = false
-                end
-            end
-        end
-    end
-end)
-v487:AddToggle({
-    Name = "Auto Defend Prehistoric",
-    Description = "",
-    Default = false,
-    Callback = function(v887)
-        _G.DefendVolcano = v887
-        StopTween(_G.DefendVolcano)
-    end
-})
-local function v889(v888)
-    game:GetService("VirtualInputManager"):SendKeyEvent(true, v888, false, game)
-    game:GetService("VirtualInputManager"):SendKeyEvent(false, v888, false, game)
-end
-local function v898()
-    local l_InteriorLava_0 = game.Workspace.Map.PrehistoricIsland.Core:FindFirstChild("InteriorLava")
-    if l_InteriorLava_0 and l_InteriorLava_0:IsA("Model") then
-        l_InteriorLava_0:Destroy()
-    end
-    local l_PrehistoricIsland_1 = game.Workspace.Map:FindFirstChild("PrehistoricIsland")
-    if l_PrehistoricIsland_1 then
-        for _, v893 in pairs(l_PrehistoricIsland_1:GetDescendants()) do
-            if v893:IsA("Part") and v893.Name:lower():find("lava") then
-                v893:Destroy()
-            end
-        end
-    end
-    if l_PrehistoricIsland_1 then
-        for _, v895 in pairs(l_PrehistoricIsland_1:GetDescendants()) do
-            if v895:IsA("Model") then
-                for _, v897 in pairs(v895:GetDescendants()) do
-                    if v897:IsA("MeshPart") and v897.Name:lower():find("lava") then
-                        v897:Destroy()
-                    end
-                end
-            end
-        end
-    end
-end
-local function v904()
-    local l_VolcanoRocks_0 = game.Workspace.Map.PrehistoricIsland.Core.VolcanoRocks
-    for _, v901 in pairs(l_VolcanoRocks_0:GetChildren()) do
-        if v901:IsA("Model") then
-            local l_volcanorock_0 = v901:FindFirstChild("volcanorock")
-            if l_volcanorock_0 and l_volcanorock_0:IsA("MeshPart") then
-                local l_Color_0 = l_volcanorock_0.Color
-                if l_Color_0 == Color3.fromRGB(185, 53, 56) or l_Color_0 == Color3.fromRGB(185, 53, 57) then
-                    return l_volcanorock_0
-                end
-            end
-        end
-    end
-    return nil
-end
-local function v913(v905)
-    local l_LocalPlayer_13 = game.Players.LocalPlayer
-    local l_Backpack_2 = l_LocalPlayer_13.Backpack
-    for _, v909 in pairs(l_Backpack_2:GetChildren()) do
-        if v909:IsA("Tool") and v909.ToolTip == v905 then
-            v909.Parent = l_LocalPlayer_13.Character
-            for _, v911 in ipairs({"Z", "X", "C", "V", "F"}) do
-                wait()
-                do
-                    local l_v911_0 = v911
-                    pcall(function()
-                        v889(l_v911_0)
-                    end)
-                end
-            end
-            v909.Parent = l_Backpack_2
-            break
-        end
-    end
-end
-spawn(function()
-    while wait() do
-        if _G.DefendVolcano then
-            AutoHaki()
-            pcall(v898)
-            local v914 = v904()
-            if not v914 then
-                _G.TpPrehistoric = true
-            else
-                local v915 = CFrame.new(v914.Position)
-                TP1(v915)
-                local l_Color_1 = v914.Color
-                if l_Color_1 == Color3.fromRGB(185, 53, 56) or l_Color_1 == Color3.fromRGB(185, 53, 57) then
-                    if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v914.Position).Magnitude <= 1 then
-                        if _G.UseMelee then
-                            v913("Melee")
-                        end
-                        if _G.UseSword then
-                            v913("Sword")
-                        end
-                        if _G.UseGun then
-                            v913("Gun")
-                        end
-                    end
-                    _G.TpPrehistoric = false
-                else
-                    v914 = v904()
-                end
-            end
-        end
-    end
-end)
-local _ = v487:AddSection({"Auto Skill"})
-v487:AddToggle({
-    Name = "Auto Use Melee",
-    Description = "",
-    Default = false,
-    Callback = function(v918)
-        _G.UseMelee = v918
-        StopTween(_G.UseMelee)
-    end
-})
-v487:AddToggle({
-    Name = "Auto Use Sword",
-    Description = "",
-    Default = false,
-    Callback = function(v919)
-        _G.UseSword = v919
-        StopTween(_G.UseSword)
-    end
-})
-v487:AddToggle({
-    Name = "Auto Use Gun",
-    Description = "",
-    Default = false,
-    Callback = function(v920)
-        _G.UseGun = v920
-        StopTween(_G.UseGun)
-    end
-})
-local _ = v487:AddSection({"Auto Kill Golem"})
-v487:AddToggle({
-    Name = "Auto Kill Golem",
-    Description = "",
-    Default = false,
-    Callback = function(v922)
-        _G.KillGolem = v922
-        StopTween(_G.KillGolem)
-    end
-})
-spawn(function()
-    while wait() do
-        if _G.KillGolem and World3 then
-            pcall(function()
-                if game:GetService("Workspace").Enemies:FindFirstChild("Lava Golem") then
-                    for _, v924 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                        if v924.Name == "Lava Golem" and v924:FindFirstChild("Humanoid") and v924:FindFirstChild("HumanoidRootPart") and v924.Humanoid.Health > 0 then
-                            repeat
-                                task.wait()
-                                AutoHaki()
-                                EquipWeapon(_G.SelectWeapon)
-                                v924.HumanoidRootPart.CanCollide = false
-                                v924.Humanoid.WalkSpeed = 0
-                                v924.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                topos(v924.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
-                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
-                            until not _G.KillGolem or not v924.Parent or v924.Humanoid.Health <= 0
-                        end
-                    end
-                else
-                    UnEquipWeapon(_G.SelectWeapon)
-                    if game:GetService("ReplicatedStorage"):FindFirstChild("Lava Golem") then
-                        topos(game:GetService("ReplicatedStorage"):FindFirstChild("Lava Golem").HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
-                    end
-                end
-            end)
-        end
-    end
-end)
-v487:AddToggle({
-    Name = "Auto Kill Aura Golem",
-    Description = "",
-    Default = false,
-    Callback = function(v925)
-        _G.Kill_Aura = v925
-        StopTween(_G.Kill_Aura)
-    end
-})
-spawn(function()
-    pcall(function()
-        while wait() do
-            if _G.Kill_Aura then
-                local l_LocalPlayer_14 = game:GetService("Players").LocalPlayer
-                local l_Children_0 = game:GetService("Workspace").Enemies:GetChildren()
-                local v928 = l_LocalPlayer_14.Character and l_LocalPlayer_14.Character:FindFirstChild("HumanoidRootPart") and l_LocalPlayer_14.Character.HumanoidRootPart.Position
-                do
-                    local l_l_LocalPlayer_14_0 = l_LocalPlayer_14
-                    if v928 then
-                        for _, v931 in pairs(l_Children_0) do
-                            do
-                                local l_v931_0 = v931
-                                if l_v931_0:FindFirstChild("Humanoid") and l_v931_0:FindFirstChild("HumanoidRootPart") and l_v931_0.Humanoid.Health > 0 and (l_v931_0.HumanoidRootPart.Position - v928).Magnitude <= 1000 then
-                                    pcall(function()
-                                        repeat
-                                            wait()
-                                            sethiddenproperty(l_l_LocalPlayer_14_0, "SimulationRadius", math.huge)
-                                            l_v931_0.Humanoid.Health = 0
-                                            l_v931_0.HumanoidRootPart.CanCollide = false
-                                        until not _G.Kill_Aura or not l_v931_0.Parent or l_v931_0.Humanoid.Health <= 0
-                                    end)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end)
-end)
-local _ = v487:AddSection({"Auto Collect Bone,Egg"})
-v487:AddToggle({
-    Name = "Auto Collect Bone",
-    Description = "",
-    Default = false,
-    Callback = function(v934)
-        _G.AutoCollectBone = v934
-        StopTween(_G.AutoCollectBone)
-    end
-})
-spawn(function()
-    while wait() do
-        if _G.AutoCollectBone then
-            for _, v936 in pairs(workspace:GetDescendants()) do
-                if v936:IsA("BasePart") and v936.Name == "DinoBone" then
-                    topos(CFrame.new(v936.Position))
-                end
-            end
-        end
-    end
-end)
-v487:AddToggle({
-    Name = "Auto Collect Egg",
-    Description = "",
-    Default = false,
-    Callback = function(v937)
-        _G.CollectEgg = v937
-        StopTween(_G.CollectEgg)
-    end
-})
-spawn(function()
-    while wait() do
-        if _G.CollectEgg then
-            pcall(function()
-                game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/CollectedDragonEgg"):FireServer()
-            end)
-        end
-    end
-end)
-local _ = v489:AddSection({"Kitsune Island"})
-local v939 = v489:AddParagraph({Title = "Check Kitsune Island", Content = "Loading..."})
-task.spawn(function()
-    while task.wait(1) do
-        pcall(function()
-            if game:GetService("Workspace").Map:FindFirstChild("KitsuneIsland") then
-                v939:Set("Kitsune Island Spawning    ")
-            else
-                v939:Set("Kitsune Island Not Spawn    ")
-            end
-        end)
-    end
-end)
-v489:AddToggle({
-    Name = "Auto Tween Kitsune island",
-    Description = "",
-    Default = false,
-    Callback = function(v940)
-        _G.TweenToKitsune = v940
-        StopTween(_G.TweenToKitsune)
-    end
-})
-spawn(function()
-    local v941 = nil
-    while not v941 do
-        v941 = game:GetService("Workspace").Map:FindFirstChild("KitsuneIsland")
-        wait(1)
-    end
-    while wait() do
-        if _G.TweenToKitsune then
-            local v942 = v941.FindFirstChild(v941, "ShrineActive")
-            if v942 then
-                for _, v944 in pairs(v942:GetDescendants()) do
-                    if v944:IsA("BasePart") and v944.Name:find("NeonShrinePart") then
-                        Tween(v944.CFrame)
-                    end
-                end
-            end
-        end
-    end
-end)
-spawn(function()
-    pcall(function()
-        while wait() do
-            if _G.TweenToKitsune then
-                topos(game.Workspace.Map.KitsuneIsland.ShrineActive.NeonShrinePart.CFrame * CFrame.new(0, 0, 10))
-            end
-        end
-    end)
-end)
-v489:AddToggle({
-    Title = "Esp Kitsune Island",
-    Value = false,
-    Callback = function(v945)
-        KitsuneIslandEsp = v945
-        if KitsuneIslandEsp then
-            task.spawn(function()
-                while KitsuneIslandEsp do
-                    UpdateIslandKisuneESP()
-                    task.wait(1)
-                end
-            end)
-        else
-            UpdateIslandKisuneESP()
-        end
-    end
-})
-v489:AddToggle({
-    Name = "Auto Azuer Ember",
-    Description = "",
-    Default = false,
-    Callback = function(v946)
-        _G.AutoAzuerEmber = v946
-        StopTween(_G.AutoAzuerEmber)
-    end
-})
-spawn(function()
-    while wait() do
-        if _G.AutoAzuerEmber then
-            pcall(function()
-                if game:GetService("Workspace"):FindFirstChild("AttachedAzureEmber") then
-                    TP1(game.Workspace.EmberTemplate.Part.CFrame)
-                end
-            end)
-        end
-    end
-end)
 local _ = v489:AddSection({"Sea Events"})
 v489:AddToggle({
     Name = "Auto Drive Boats",
@@ -8043,6 +7396,737 @@ v490:AddToggle({
         StopTween(_G.XaiSkillC)
     end
 })
+v498:AddButton({
+    Title = "Tween Dragon Dojo",
+    Value = false,
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5661.53, 1013.09, -334.96))
+        topos(CFrame.new(5841.29, 1208.32, 884.31))
+    end
+})
+v498:AddToggle({
+    Name = "Auto Dragon Huntery",
+    Description = "",
+    Default = false,
+    Callback = function(v822)
+        _G.FarmBlazeEM = v822
+        StopTween(_G.FarmBlazeEM)
+    end
+})
+function checkQuesta()
+    local v823 = {[1] = {Context = "Check"}}
+    local v824 = nil
+    pcall(function()
+        local v825 = {[1] = {Context = "RequestQuest"}}
+        game:GetService("ReplicatedStorage").Modules.Net["RF/DragonHunter"]:InvokeServer(unpack(v825))
+    end)
+    local _, _ = pcall(function()
+        v824 = game:GetService("ReplicatedStorage").Modules.Net["RF/DragonHunter"]:InvokeServer(unpack(v823))
+    end)
+    local v828 = false
+    local v829 = nil
+    local v830 = nil
+    local v831 = nil
+    if v824 and v824.Text then
+        v828 = true
+        local l_Text_1 = v824.Text
+        if string.find(l_Text_1, "Defeat") then
+            v831 = 1
+            v830 = tonumber(string.sub(l_Text_1, 8, 9))
+            for _, v834 in pairs({"Hydra Enforcer", "Venomous Assailant"}) do
+                if string.find(l_Text_1, v834) then
+                    v829 = v834
+                    break
+                end
+            end
+        elseif string.find(l_Text_1, "Destroy") then
+            v831 = 2
+            v830 = 10
+        end
+    end
+    return v828, v829, v830, v831
+end
+function BackTODoJo()
+    for _, v836 in pairs(game:GetService("Players").LocalPlayer.PlayerGui.Notifications:GetChildren()) do
+        if v836.Name == "NotificationTemplate" and string.find(v836.Text, "Head back to the Dojo to complete more tasks") then
+            return true
+        end
+    end
+    return false
+end
+function DragonMobClear(v837, v838, v839)
+    if not workspace.Enemies:FindFirstChild(v838) then
+        if v839 then
+            topos(v839)
+        end
+    else
+        for _, v841 in pairs(workspace.Enemies:GetChildren()) do
+            if v841.Name == v838 and Attack.Alive(v841) and v837 then
+                Attack.Kill(v841, v837)
+            end
+        end
+    end
+end
+spawn(function()
+    while task.wait() do
+        if _G.FarmBlazeEM then
+            pcall(function()
+                local v842, v843, _, v845 = checkQuesta()
+                if not v842 or BackTODoJo() then
+                    topos(CFrame.new(5813, 1208, 884))
+                    DragonMobClear(false, nil, nil)
+                elseif v845 ~= 1 then
+                    if v845 == 2 then
+                        local l_FirstChild_5 = workspace.Map.Waterfall.IslandModel:FindFirstChild("Meshes/bambootree", true)
+                        do
+                            local l_l_FirstChild_5_0 = l_FirstChild_5
+                            if l_l_FirstChild_5_0 then
+                                repeat
+                                    task.wait()
+                                    spawn(function()
+                                        topos(l_l_FirstChild_5_0.CFrame * CFrame.new(4, 0, 0))
+                                    end)
+                                    if (l_l_FirstChild_5_0.Position - Root.Position).Magnitude <= 200 then
+                                        MousePos = l_l_FirstChild_5_0.Position
+                                        Useskills("Melee", "Z")
+                                        Useskills("Melee", "X")
+                                        Useskills("Melee", "C")
+                                        task.wait(0.5)
+                                        Useskills("Sword", "Z")
+                                        Useskills("Sword", "X")
+                                        task.wait(0.5)
+                                        Useskills("Blox Fruit", "Z")
+                                        Useskills("Blox Fruit", "X")
+                                        Useskills("Blox Fruit", "C")
+                                        task.wait(0.5)
+                                        Useskills("Gun", "Z")
+                                        Useskills("Gun", "X")
+                                    end
+                                until not _G.FarmBlazeEM or not v842 or BackTODoJo()
+                            end
+                        end
+                    end
+                elseif v843 == "Hydra Enforcer" or v843 == "Venomous Assailant" then
+                    repeat
+                        task.wait()
+                        DragonMobClear(true, v843, CFrame.new(4620.61, 1002.29, 399.08))
+                    until not _G.FarmBlazeEM or not v842 or BackTODoJo()
+                end
+            end)
+        end
+    end
+end)
+spawn(function()
+    while task.wait(0.1) do
+        if _G.FarmBlazeEM then
+            pcall(function()
+                if workspace:FindFirstChild("EmberTemplate") and workspace.EmberTemplate:FindFirstChild("Part") then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = workspace.EmberTemplate.Part.CFrame
+                end
+            end)
+        end
+    end
+end)
+local _ = v498:AddSection({"Volcanic Island"})
+v498:AddButton({
+    Title = "Craft Volcanic Magnet",
+    Value = false,
+    Callback = function()
+        local v849 = {[1] = "CraftItem", [2] = "Craft", [3] = "Volcanic Magnet"}
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v849))
+    end
+})
+local v850 = v498:AddParagraph({Title = "Check Prehistoric Island", Content = "Loading..."})
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            if game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland") then
+                v850:Set("Prehistoric Island Spawning    ")
+            else
+                v850:Set("Prehistoric Island Not Spawn    ")
+            end
+        end)
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Find Prehistoric",
+    Description = "",
+    Default = false,
+    Callback = function(v851)
+        _G.Nocliprock = v851
+        StopTween(_G.Nocliprock)
+    end
+})
+local v852 = {}
+local l_Players_0 = game:GetService("Players")
+local l_RunService_0 = game:GetService("RunService")
+local l_VirtualInputManager_3 = game:GetService("VirtualInputManager")
+local l_Workspace_1 = game:GetService("Workspace")
+local v857 = 350
+l_RunService_0.RenderStepped:Connect(function()
+    for v858, v859 in pairs(v852) do
+        if v859 and v859.Parent and v859.Name == "VehicleSeat" and not v859.Occupant then
+            v852[v858] = v859
+        end
+    end
+end)
+local _ = function()
+    for _, v861 in pairs(v852) do
+        if v861 and v861.Parent and v861.Name == "VehicleSeat" and not v861.Occupant then
+            topos(v861.CFrame)
+        end
+    end
+end
+local v863 = false
+local v864 = false
+l_RunService_0.RenderStepped:Connect(function()
+    if _G.AutoFindPrehistoric then
+        local l_Character_8 = l_Players_0.LocalPlayer.Character
+        if l_Character_8 and l_Character_8:FindFirstChild("Humanoid") then
+            local function v868()
+                if not v863 then
+                    v863 = true
+                    for _, v867 in pairs(v852) do
+                        if v867 and v867.Parent and v867.Name == "VehicleSeat" and not v867.Occupant then
+                            topos(v867.CFrame)
+                            break
+                        end
+                    end
+                    v863 = false
+                    return 
+                else
+                    return 
+                end
+            end
+            local l_Humanoid_1 = l_Character_8.Humanoid
+            local v870 = false
+            local v871 = nil
+            for _, v873 in pairs(l_Workspace_1.Boats:GetChildren()) do
+                local l_VehicleSeat_0 = v873:FindFirstChild("VehicleSeat")
+                if l_VehicleSeat_0 and l_VehicleSeat_0.Occupant == l_Humanoid_1 then
+                    v870 = true
+                    v871 = l_VehicleSeat_0
+                    v852[v873.Name] = l_VehicleSeat_0
+                elseif l_VehicleSeat_0 and l_VehicleSeat_0.Occupant == "Name" then
+                    v868()
+                end
+            end
+            if v870 then
+                v871.MaxSpeed = v857
+                v871.CFrame = CFrame.new(Vector3.new(v871.Position.X, v871.Position.Y, v871.Position.Z)) * v871.CFrame.Rotation
+                l_VirtualInputManager_3:SendKeyEvent(true, "W", false, game)
+                for _, v876 in pairs(l_Workspace_1.Boats:GetDescendants()) do
+                    if v876:IsA("BasePart") then
+                        v876.CanCollide = false
+                    end
+                end
+                for _, v878 in pairs(l_Character_8:GetDescendants()) do
+                    if v878:IsA("BasePart") then
+                        v878.CanCollide = false
+                    end
+                end
+                for _, v880 in ipairs({
+                    "ShipwreckIsland",
+                    "SandIsland",
+                    "TreeIsland",
+                    "TinyIsland",
+                    "MysticIsland",
+                    "KitsuneIsland",
+                    "FrozenDimension"
+                }) do
+                    local l_FirstChild_6 = l_Workspace_1.Map:FindFirstChild(v880)
+                    if l_FirstChild_6 and l_FirstChild_6:IsA("Model") then
+                        l_FirstChild_6:Destroy()
+                    end
+                end
+                if l_Workspace_1.Map:FindFirstChild("PrehistoricIsland") then
+                    l_VirtualInputManager_3:SendKeyEvent(false, "W", false, game)
+                    _G.AutoFindPrehistoric = false
+                    if not v864 then
+                        v864 = true
+                    end
+                    return 
+                else
+                    return 
+                end
+            else
+                return 
+            end
+        else
+            return 
+        end
+    else
+        v864 = false
+        return 
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Tween Prehistoric Island",
+    Description = "",
+    Default = false,
+    Callback = function(v882)
+        _G.TweenVolcano = v882
+        StopTween(_G.TweenVolcano)
+    end
+})
+spawn(function()
+    local v883 = nil
+    while not v883 do
+        v883 = game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland")
+        wait()
+    end
+    while wait() do
+        if _G.TweenVolcano then
+            local l_PrehistoricIsland_0 = game:GetService("Workspace").Map:FindFirstChild("PrehistoricIsland")
+            if l_PrehistoricIsland_0 then
+                local v885 = l_PrehistoricIsland_0:FindFirstChild("Core") and l_PrehistoricIsland_0.Core:FindFirstChild("PrehistoricRelic")
+                local v886 = v885 and v885:FindFirstChild("Skull")
+                if v886 then
+                    TP1(CFrame.new(v886.Position))
+                    _G.TweenVolcano = false
+                end
+            end
+        end
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Defend Prehistoric",
+    Description = "",
+    Default = false,
+    Callback = function(v887)
+        _G.DefendVolcano = v887
+        StopTween(_G.DefendVolcano)
+    end
+})
+local function v889(v888)
+    game:GetService("VirtualInputManager"):SendKeyEvent(true, v888, false, game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false, v888, false, game)
+end
+local function v898()
+    local l_InteriorLava_0 = game.Workspace.Map.PrehistoricIsland.Core:FindFirstChild("InteriorLava")
+    if l_InteriorLava_0 and l_InteriorLava_0:IsA("Model") then
+        l_InteriorLava_0:Destroy()
+    end
+    local l_PrehistoricIsland_1 = game.Workspace.Map:FindFirstChild("PrehistoricIsland")
+    if l_PrehistoricIsland_1 then
+        for _, v893 in pairs(l_PrehistoricIsland_1:GetDescendants()) do
+            if v893:IsA("Part") and v893.Name:lower():find("lava") then
+                v893:Destroy()
+            end
+        end
+    end
+    if l_PrehistoricIsland_1 then
+        for _, v895 in pairs(l_PrehistoricIsland_1:GetDescendants()) do
+            if v895:IsA("Model") then
+                for _, v897 in pairs(v895:GetDescendants()) do
+                    if v897:IsA("MeshPart") and v897.Name:lower():find("lava") then
+                        v897:Destroy()
+                    end
+                end
+            end
+        end
+    end
+end
+local function v904()
+    local l_VolcanoRocks_0 = game.Workspace.Map.PrehistoricIsland.Core.VolcanoRocks
+    for _, v901 in pairs(l_VolcanoRocks_0:GetChildren()) do
+        if v901:IsA("Model") then
+            local l_volcanorock_0 = v901:FindFirstChild("volcanorock")
+            if l_volcanorock_0 and l_volcanorock_0:IsA("MeshPart") then
+                local l_Color_0 = l_volcanorock_0.Color
+                if l_Color_0 == Color3.fromRGB(185, 53, 56) or l_Color_0 == Color3.fromRGB(185, 53, 57) then
+                    return l_volcanorock_0
+                end
+            end
+        end
+    end
+    return nil
+end
+local function v913(v905)
+    local l_LocalPlayer_13 = game.Players.LocalPlayer
+    local l_Backpack_2 = l_LocalPlayer_13.Backpack
+    for _, v909 in pairs(l_Backpack_2:GetChildren()) do
+        if v909:IsA("Tool") and v909.ToolTip == v905 then
+            v909.Parent = l_LocalPlayer_13.Character
+            for _, v911 in ipairs({"Z", "X", "C", "V", "F"}) do
+                wait()
+                do
+                    local l_v911_0 = v911
+                    pcall(function()
+                        v889(l_v911_0)
+                    end)
+                end
+            end
+            v909.Parent = l_Backpack_2
+            break
+        end
+    end
+end
+spawn(function()
+    while wait() do
+        if _G.DefendVolcano then
+            AutoHaki()
+            pcall(v898)
+            local v914 = v904()
+            if not v914 then
+                _G.TpPrehistoric = true
+            else
+                local v915 = CFrame.new(v914.Position)
+                TP1(v915)
+                local l_Color_1 = v914.Color
+                if l_Color_1 == Color3.fromRGB(185, 53, 56) or l_Color_1 == Color3.fromRGB(185, 53, 57) then
+                    if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v914.Position).Magnitude <= 1 then
+                        if _G.UseMelee then
+                            v913("Melee")
+                        end
+                        if _G.UseSword then
+                            v913("Sword")
+                        end
+                        if _G.UseGun then
+                            v913("Gun")
+                        end
+                    end
+                    _G.TpPrehistoric = false
+                else
+                    v914 = v904()
+                end
+            end
+        end
+    end
+end)
+local _ = v498:AddSection({"Auto Skill"})
+v498:AddToggle({
+    Name = "Auto Use Melee",
+    Description = "",
+    Default = false,
+    Callback = function(v918)
+        _G.UseMelee = v918
+        StopTween(_G.UseMelee)
+    end
+})
+v498:AddToggle({
+    Name = "Auto Use Sword",
+    Description = "",
+    Default = false,
+    Callback = function(v919)
+        _G.UseSword = v919
+        StopTween(_G.UseSword)
+    end
+})
+v498:AddToggle({
+    Name = "Auto Use Gun",
+    Description = "",
+    Default = false,
+    Callback = function(v920)
+        _G.UseGun = v920
+        StopTween(_G.UseGun)
+    end
+})
+local _ = v498:AddSection({"Auto Kill Golem"})
+v498:AddToggle({
+    Name = "Auto Kill Golem",
+    Description = "",
+    Default = false,
+    Callback = function(v922)
+        _G.KillGolem = v922
+        StopTween(_G.KillGolem)
+    end
+})
+spawn(function()
+    while wait() do
+        if _G.KillGolem and World3 then
+            pcall(function()
+                if game:GetService("Workspace").Enemies:FindFirstChild("Lava Golem") then
+                    for _, v924 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                        if v924.Name == "Lava Golem" and v924:FindFirstChild("Humanoid") and v924:FindFirstChild("HumanoidRootPart") and v924.Humanoid.Health > 0 then
+                            repeat
+                                task.wait()
+                                AutoHaki()
+                                EquipWeapon(_G.SelectWeapon)
+                                v924.HumanoidRootPart.CanCollide = false
+                                v924.Humanoid.WalkSpeed = 0
+                                v924.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                topos(v924.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+                            until not _G.KillGolem or not v924.Parent or v924.Humanoid.Health <= 0
+                        end
+                    end
+                else
+                    UnEquipWeapon(_G.SelectWeapon)
+                    if game:GetService("ReplicatedStorage"):FindFirstChild("Lava Golem") then
+                        topos(game:GetService("ReplicatedStorage"):FindFirstChild("Lava Golem").HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
+                    end
+                end
+            end)
+        end
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Kill Aura Golem",
+    Description = "",
+    Default = false,
+    Callback = function(v925)
+        _G.Kill_Aura = v925
+        StopTween(_G.Kill_Aura)
+    end
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.Kill_Aura then
+                local l_LocalPlayer_14 = game:GetService("Players").LocalPlayer
+                local l_Children_0 = game:GetService("Workspace").Enemies:GetChildren()
+                local v928 = l_LocalPlayer_14.Character and l_LocalPlayer_14.Character:FindFirstChild("HumanoidRootPart") and l_LocalPlayer_14.Character.HumanoidRootPart.Position
+                do
+                    local l_l_LocalPlayer_14_0 = l_LocalPlayer_14
+                    if v928 then
+                        for _, v931 in pairs(l_Children_0) do
+                            do
+                                local l_v931_0 = v931
+                                if l_v931_0:FindFirstChild("Humanoid") and l_v931_0:FindFirstChild("HumanoidRootPart") and l_v931_0.Humanoid.Health > 0 and (l_v931_0.HumanoidRootPart.Position - v928).Magnitude <= 1000 then
+                                    pcall(function()
+                                        repeat
+                                            wait()
+                                            sethiddenproperty(l_l_LocalPlayer_14_0, "SimulationRadius", math.huge)
+                                            l_v931_0.Humanoid.Health = 0
+                                            l_v931_0.HumanoidRootPart.CanCollide = false
+                                        until not _G.Kill_Aura or not l_v931_0.Parent or l_v931_0.Humanoid.Health <= 0
+                                    end)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end)
+local _ = v498:AddSection({"Auto Collect Bone,Egg"})
+v498:AddToggle({
+    Name = "Auto Collect Bone",
+    Description = "",
+    Default = false,
+    Callback = function(v934)
+        _G.AutoCollectBone = v934
+        StopTween(_G.AutoCollectBone)
+    end
+})
+spawn(function()
+    while wait() do
+        if _G.AutoCollectBone then
+            for _, v936 in pairs(workspace:GetDescendants()) do
+                if v936:IsA("BasePart") and v936.Name == "DinoBone" then
+                    topos(CFrame.new(v936.Position))
+                end
+            end
+        end
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Collect Egg",
+    Description = "",
+    Default = false,
+    Callback = function(v937)
+        _G.CollectEgg = v937
+        StopTween(_G.CollectEgg)
+    end
+})
+spawn(function()
+    while wait() do
+        if _G.CollectEgg then
+            pcall(function()
+                game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RE/CollectedDragonEgg"):FireServer()
+            end)
+        end
+    end
+end)
+local _ = v498:AddSection({"Kitsune Island"})
+local v939 = v498:AddParagraph({Title = "Check Kitsune Island", Content = "Loading..."})
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            if game:GetService("Workspace").Map:FindFirstChild("KitsuneIsland") then
+                v939:Set("Kitsune Island Spawning    ")
+            else
+                v939:Set("Kitsune Island Not Spawn    ")
+            end
+        end)
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Tween Kitsune island",
+    Description = "",
+    Default = false,
+    Callback = function(v940)
+        _G.TweenToKitsune = v940
+        StopTween(_G.TweenToKitsune)
+    end
+})
+spawn(function()
+    local v941 = nil
+    while not v941 do
+        v941 = game:GetService("Workspace").Map:FindFirstChild("KitsuneIsland")
+        wait(1)
+    end
+    while wait() do
+        if _G.TweenToKitsune then
+            local v942 = v941.FindFirstChild(v941, "ShrineActive")
+            if v942 then
+                for _, v944 in pairs(v942:GetDescendants()) do
+                    if v944:IsA("BasePart") and v944.Name:find("NeonShrinePart") then
+                        Tween(v944.CFrame)
+                    end
+                end
+            end
+        end
+    end
+end)
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.TweenToKitsune then
+                topos(game.Workspace.Map.KitsuneIsland.ShrineActive.NeonShrinePart.CFrame * CFrame.new(0, 0, 10))
+            end
+        end
+    end)
+end)
+v498:AddToggle({
+    Title = "Esp Kitsune Island",
+    Value = false,
+    Callback = function(v945)
+        KitsuneIslandEsp = v945
+        if KitsuneIslandEsp then
+            task.spawn(function()
+                while KitsuneIslandEsp do
+                    UpdateIslandKisuneESP()
+                    task.wait(1)
+                end
+            end)
+        else
+            UpdateIslandKisuneESP()
+        end
+    end
+})
+v498:AddToggle({
+    Name = "Auto Azuer Ember",
+    Description = "",
+    Default = false,
+    Callback = function(v946)
+        _G.AutoAzuerEmber = v946
+        StopTween(_G.AutoAzuerEmber)
+    end
+})
+spawn(function()
+    while wait() do
+        if _G.AutoAzuerEmber then
+            pcall(function()
+                if game:GetService("Workspace"):FindFirstChild("AttachedAzureEmber") then
+                    TP1(game.Workspace.EmberTemplate.Part.CFrame)
+                end
+            end)
+        end
+    end
+end)
+local _ = v498:AddSection({"Mirage Island"})
+local v984 = v498:AddParagraph({Title = "Check Mirage Island", Content = "Loading..."})
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            if not game.Workspace._WorldOrigin.Locations:FindFirstChild("Mirage Island") then
+                v984:Set("Mirage Island Not Spawn    ")
+            else
+                v984:Set("Mirage Island Spawning    ")
+            end
+        end)
+    end
+end)
+v498:AddToggle({
+    Name = "Tween Mirage Island",
+    Description = "",
+    Default = false,
+    Callback = function(v985)
+        _G.AutoMysticIsland = v985
+        StopTween(_G.AutoMysticIsland)
+    end
+})
+spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if _G.AutoMysticIsland then
+                for _, v987 in pairs(game:GetService("Workspace")._WorldOrigin.Locations:GetChildren()) do
+                    if v987.Name == "Mirage Island" then
+                        topos(v987.CFrame * CFrame.new(0, 333, 0))
+                    end
+                end
+            end
+        end)
+    end
+end)
+v498:AddToggle({
+    Title = "Esp Mirage Island",
+    Description = "",
+    Value = false,
+    Callback = function(v988)
+        MirageIslandESP = v988
+        if MirageIslandESP then
+            task.spawn(function()
+                while MirageIslandESP do
+                    UpdateIslandMirageESP()
+                    task.wait(1)
+                end
+            end)
+        else
+            UpdateIslandMirageESP()
+        end
+    end
+})
+v498:AddToggle({
+    Name = "Look Moon + Auto V3",
+    Description = "",
+    Default = false,
+    Callback = function(v989)
+        _G.AutoDooHee = v989
+        StopTween(_G.AutoDooHee)
+    end
+})
+local l_VirtualInputManager_4 = game:GetService("VirtualInputManager")
+spawn(function()
+    while wait() do
+        pcall(function()
+            if getgenv()._G.AutoDooHee then
+                local l_MoonDirection_0 = game.Lighting:GetMoonDirection()
+                local v992 = game.Workspace.CurrentCamera.CFrame.p + l_MoonDirection_0 * 100
+                game.Workspace.CurrentCamera.CFrame = CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.p, v992)
+                wait(2)
+                l_VirtualInputManager_4:SendKeyEvent(true, "T", false, game)
+                wait(0.1)
+                l_VirtualInputManager_4:SendKeyEvent(false, "T", false, game)
+            end
+        end)
+    end
+end)
+v498:AddToggle({
+    Name = "Auto Tween To Gear",
+    Description = "",
+    Default = false,
+    Callback = function(v993)
+        _G.TweenMGear = v993
+        StopTween(_G.TweenMGear)
+    end
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.TweenMGear and game:GetService("Workspace").Map:FindFirstChild("MysticIsland") then
+                for _, v995 in pairs(game:GetService("Workspace").Map.MysticIsland:GetChildren()) do
+                    if v995:IsA("MeshPart") and v995.Material == Enum.Material.Neon then
+                        topos(v995.CFrame)
+                    end
+                end
+            end
+        end
+    end)
+end)
 
 local _ = v491:AddSection({"Raid Fruits"})
 
@@ -8834,6 +8918,72 @@ v494:AddToggle({
             if AimbotSkills and AimbotTap then
                 v1:SetNPCSilentAim(true)
             end
+        end
+    end
+})
+local _ = v494:AddSection({"Aimbot skill"})
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+
+v494:AddToggle({
+    Name = "Enable Aimbot Skill",
+    Default = false,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+            v1:SetPlayerSilentAim(false)
+            v1:SetNPCSilentAim(false)
+        else
+            if AimPlayers then
+                v1:SetPlayerSilentAim(true)
+            end
+            if AimMobs then
+                v1:SetNPCSilentAim(true)
+            end
+            v1:Restore()
+        end
+    end
+})
+
+v494:AddToggle({
+    Name = "Aimbot On Players",
+    Default = false,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+            v1:SetNPCSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetPlayerSilentAim(v)
+        else
+            v1:SetPlayerSilentAim(false)
+        end
+    end
+})
+
+v494:AddToggle({
+    Name = "Aimbot On Mobs",
+    Default = false,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+            v1:SetPlayerSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetNPCSilentAim(v)
+        else
+            v1:SetNPCSilentAim(false)
         end
     end
 })
@@ -9732,424 +9882,8 @@ v496:AddButton({
 })
 
 local _ = v496:AddSection({"Settings"})
-local FastAttackEnabled = false
-local FastAttackThread = nil
-local Connections = {}
-
-local function StopFastAttack()
-    FastAttackEnabled = false
-    if FastAttackThread then
-        task.cancel(FastAttackThread)
-        FastAttackThread = nil
-    end
-    for _, connection in ipairs(Connections) do
-        pcall(function()
-            connection:Disconnect()
-        end)
-    end
-    Connections = {}
-end
-
-local function StartFastAttack()
-    if FastAttackEnabled then
-        StopFastAttack()
-    end
-    
-    FastAttackEnabled = true
-    
-    FastAttackThread = task.spawn(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting/refs/heads/main/FastMax.lua"))()
-        
-        local function GetBladeHits()
-            local targets = {}
-            local function GetDistance(v)
-                return (v.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-            end
-            
-            for _, part in pairs({game.Workspace.Enemies, game.Workspace.Characters}) do
-                for _, v in pairs(part:GetChildren()) do
-                    if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") then
-                        if GetDistance(v.HumanoidRootPart) < 60 then
-                            table.insert(targets, v)
-                        end
-                    end
-                end
-            end
-        
-            return targets
-        end
-        
-        local function AttackAll()
-            if not FastAttackEnabled then return end
-            local player = game.Players.LocalPlayer
-            local character = player.Character
-            if not character then return end
-        
-            local equippedWeapon = character:FindFirstChild("EquippedWeapon")
-            if not equippedWeapon then return end
-        
-            local enemies = GetBladeHits()
-            if #enemies > 0 then
-                local netModule = game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("Net")
-                netModule:WaitForChild("RE/RegisterAttack"):FireServer(-math.huge)
-                
-                local args = {nil, {}}
-                for i, v in pairs(enemies) do
-                    if not args[1] then
-                        args[1] = v.Head
-                    end
-                    args[2][i] = {v, v.HumanoidRootPart}
-                end
-                
-                netModule:WaitForChild("RE/RegisterHit"):FireServer(unpack(args))
-            end
-        end
-        
-        spawn(function()
-            while FastAttackEnabled and task.wait() do 
-                pcall(AttackAll) 
-            end
-        end)
-        
-        local Players = game:GetService("Players")
-        local RunService = game:GetService("RunService")
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-        local Workspace = game:GetService("Workspace")
-        local VirtualInputManager = game:GetService("VirtualInputManager")
-        
-        local Player = Players.LocalPlayer
-        local Modules = ReplicatedStorage:WaitForChild("Modules")
-        local Net = Modules:WaitForChild("Net")
-        local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
-        local RegisterHit = Net:WaitForChild("RE/RegisterHit")
-        local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
-        local GunValidator = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Validator2")
-        
-        local Config = {
-            AttackDistance = 65,
-            AttackMobs = true,
-            AttackPlayers = true,
-            AttackCooldown = 0.2,
-            ComboResetTime = 0.3,
-            MaxCombo = 4,
-            HitboxLimbs = {"RightLowerArm", "RightUpperArm", "LeftLowerArm", "LeftUpperArm", "RightHand", "LeftHand"},
-            AutoClickEnabled = true
-        }
-        
-        local FastAttack = {}
-        FastAttack.__index = FastAttack
-        
-        function FastAttack.new()
-            local self = setmetatable({
-                Debounce = 0,
-                ComboDebounce = 0,
-                ShootDebounce = 0,
-                M1Combo = 0,
-                EnemyRootPart = nil,
-                Connections = {},
-                Overheat = {Dragonstorm = {MaxOverheat = 3, Cooldown = 0, TotalOverheat = 0, Distance = 350, Shooting = false}},
-                ShootsPerTarget = {["Dual Flintlock"] = 2},
-                SpecialShoots = {["Skull Guitar"] = "TAP", ["Bazooka"] = "Position", ["Cannon"] = "Position", ["Dragonstorm"] = "Overheat"}
-            }, FastAttack)
-            
-            pcall(function()
-                self.CombatFlags = require(Modules.Flags).COMBAT_REMOTE_THREAD
-                self.ShootFunction = getupvalue(require(ReplicatedStorage.Controllers.CombatController).Attack, 9)
-                local LocalScript = Player:WaitForChild("PlayerScripts"):FindFirstChildOfClass("LocalScript")
-                if LocalScript and getsenv then
-                    self.HitFunction = getsenv(LocalScript)._G.SendHitsToServer
-                end
-            end)
-            
-            return self
-        end
-        
-        function FastAttack:IsEntityAlive(entity)
-            local humanoid = entity and entity:FindFirstChild("Humanoid")
-            return humanoid and humanoid.Health > 0
-        end
-        
-        function FastAttack:CheckStun(Character, Humanoid, ToolTip)
-            local Stun = Character:FindFirstChild("Stun")
-            local Busy = Character:FindFirstChild("Busy")
-            if Humanoid.Sit and (ToolTip == "Sword" or ToolTip == "Melee" or ToolTip == "Blox Fruit") then
-                return false
-            elseif Stun and Stun.Value > 0 or Busy and Busy.Value then
-                return false
-            end
-            return true
-        end
-        
-        function FastAttack:GetBladeHits(Character, Distance)
-            if not FastAttackEnabled then return {} end
-            local Position = Character:GetPivot().Position
-            local BladeHits = {}
-            Distance = Distance or Config.AttackDistance
-            
-            local function ProcessTargets(Folder, CanAttack)
-                for _, Enemy in ipairs(Folder:GetChildren()) do
-                    if Enemy ~= Character and self:IsEntityAlive(Enemy) then
-                        local BasePart = Enemy:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or Enemy:FindFirstChild("HumanoidRootPart")
-                        if BasePart and (Position - BasePart.Position).Magnitude <= Distance then
-                            if not self.EnemyRootPart then
-                                self.EnemyRootPart = BasePart
-                            else
-                                table.insert(BladeHits, {Enemy, BasePart})
-                            end
-                        end
-                    end
-                end
-            end
-            
-            if Config.AttackMobs then ProcessTargets(Workspace.Enemies) end
-            if Config.AttackPlayers then ProcessTargets(Workspace.Characters, true) end
-            
-            return BladeHits
-        end
-        
-        function FastAttack:GetClosestEnemy(Character, Distance)
-            local BladeHits = self:GetBladeHits(Character, Distance)
-            local Closest, MinDistance = nil, math.huge
-            
-            for _, Hit in ipairs(BladeHits) do
-                local Magnitude = (Character:GetPivot().Position - Hit[2].Position).Magnitude
-                if Magnitude < MinDistance then
-                    MinDistance = Magnitude
-                    Closest = Hit[2]
-                end
-            end
-            return Closest
-        end
-        
-        function FastAttack:GetCombo()
-            local Combo = (tick() - self.ComboDebounce) <= Config.ComboResetTime and self.M1Combo or 0
-            Combo = Combo >= Config.MaxCombo and 1 or Combo + 1
-            self.ComboDebounce = tick()
-            self.M1Combo = Combo
-            return Combo
-        end
-        
-        function FastAttack:ShootInTarget(TargetPosition)
-            if not FastAttackEnabled then return end
-            local Character = Player.Character
-            if not self:IsEntityAlive(Character) then return end
-            
-            local Equipped = Character:FindFirstChildOfClass("Tool")
-            if not Equipped or Equipped.ToolTip ~= "Gun" then return end
-            
-            local Cooldown = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or 0.3
-            if (tick() - self.ShootDebounce) < Cooldown then return end
-            
-            local ShootType = self.SpecialShoots[Equipped.Name] or "Normal"
-            if ShootType == "Position" or (ShootType == "TAP" and Equipped:FindFirstChild("RemoteEvent")) then
-                Equipped:SetAttribute("LocalTotalShots", (Equipped:GetAttribute("LocalTotalShots") or 0) + 1)
-                GunValidator:FireServer(self:GetValidator2())
-                
-                if ShootType == "TAP" then
-                    Equipped.RemoteEvent:FireServer("TAP", TargetPosition)
-                else
-                    ShootGunEvent:FireServer(TargetPosition)
-                end
-                self.ShootDebounce = tick()
-            else
-                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-                task.wait(0.05)
-                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-                self.ShootDebounce = tick()
-            end
-        end
-        
-        function FastAttack:GetValidator2()
-            local v1 = getupvalue(self.ShootFunction, 15)
-            local v2 = getupvalue(self.ShootFunction, 13)
-            local v3 = getupvalue(self.ShootFunction, 16)
-            local v4 = getupvalue(self.ShootFunction, 17)
-            local v5 = getupvalue(self.ShootFunction, 14)
-            local v6 = getupvalue(self.ShootFunction, 12)
-            local v7 = getupvalue(self.ShootFunction, 18)
-            
-            local v8 = v6 * v2
-            local v9 = (v5 * v2 + v6 * v1) % v3
-            v9 = (v9 * v3 + v8) % v4
-            v5 = math.floor(v9 / v3)
-            v6 = v9 - v5 * v3
-            v7 = v7 + 1
-            
-            setupvalue(self.ShootFunction, 15, v1)
-            setupvalue(self.ShootFunction, 13, v2)
-            setupvalue(self.ShootFunction, 16, v3)
-            setupvalue(self.ShootFunction, 17, v4)
-            setupvalue(self.ShootFunction, 14, v5)
-            setupvalue(self.ShootFunction, 12, v6)
-            setupvalue(self.ShootFunction, 18, v7)
-            
-            return math.floor(v9 / v4 * 16777215), v7
-        end
-        
-        function FastAttack:UseNormalClick(Character, Humanoid, Cooldown)
-            if not FastAttackEnabled then return end
-            self.EnemyRootPart = nil
-            local BladeHits = self:GetBladeHits(Character)
-            
-            if self.EnemyRootPart then
-                RegisterAttack:FireServer(Cooldown)
-                if self.CombatFlags and self.HitFunction then
-                    self.HitFunction(self.EnemyRootPart, BladeHits)
-                else
-                    RegisterHit:FireServer(self.EnemyRootPart, BladeHits)
-                end
-            end
-        end
-        
-        function FastAttack:UseFruitM1(Character, Equipped, Combo)
-            if not FastAttackEnabled then return end
-            local Targets = self:GetBladeHits(Character)
-            if not Targets[1] then return end
-            
-            local Direction = (Targets[1][2].Position - Character:GetPivot().Position).Unit
-            Equipped.LeftClickRemote:FireServer(Direction, Combo)
-        end
-        
-        function FastAttack:Attack()
-            if not FastAttackEnabled or not Config.AutoClickEnabled or (tick() - self.Debounce) < Config.AttackCooldown then return end
-            local Character = Player.Character
-            if not Character or not self:IsEntityAlive(Character) then return end
-            
-            local Humanoid = Character.Humanoid
-            local Equipped = Character:FindFirstChildOfClass("Tool")
-            if not Equipped then return end
-            
-            local ToolTip = Equipped.ToolTip
-            if not table.find({"Melee", "Blox Fruit", "Sword", "Gun"}, ToolTip) then return end
-            
-            local Cooldown = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or Config.AttackCooldown
-            if not self:CheckStun(Character, Humanoid, ToolTip) then return end
-            
-            local Combo = self:GetCombo()
-            Cooldown = Cooldown + (Combo >= Config.MaxCombo and 0.05 or 0)
-            self.Debounce = Combo >= Config.MaxCombo and ToolTip ~= "Gun" and (tick() + 0.05) or tick()
-            
-            if ToolTip == "Blox Fruit" and Equipped:FindFirstChild("LeftClickRemote") then
-                self:UseFruitM1(Character, Equipped, Combo)
-            elseif ToolTip == "Gun" then
-                local Target = self:GetClosestEnemy(Character, 120)
-                if Target then
-                    self:ShootInTarget(Target.Position)
-                end
-            else
-                self:UseNormalClick(Character, Humanoid, Cooldown)
-            end
-        end
-        
-        local AttackInstance = FastAttack.new()
-        if FastAttackEnabled then
-            table.insert(Connections, RunService.Stepped:Connect(function()
-                if FastAttackEnabled then
-                    pcall(function() AttackInstance:Attack() end)
-                end
-            end))
-        end
-        
-        for _, v in pairs(getgc(true)) do
-            if typeof(v) == "function" and iscclosure(v) and FastAttackEnabled then
-                local name = debug.getinfo(v).name
-                if name == "Attack" or name == "attack" or name == "RegisterHit" then
-                    pcall(function()
-                        hookfunction(v, function(...)
-                            if FastAttackEnabled then
-                                pcall(function() AttackInstance:Attack() end)
-                            end
-                            return v(...)
-                        end)
-                    end)
-                end
-            end
-        end
-        
-        local Modules = game.ReplicatedStorage.Modules
-        local Net = Modules.Net
-        local Register_Hit, Register_Attack = Net:WaitForChild("RE/RegisterHit"), Net:WaitForChild("RE/RegisterAttack")
-        local Funcs = {}
-        
-        function GetAllBladeHits()
-            if not FastAttackEnabled then return {} end
-            bladehits = {}
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 
-                and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 65 then
-                    table.insert(bladehits, v)
-                end
-            end
-            return bladehits
-        end
-        
-        function Getplayerhit()
-            if not FastAttackEnabled then return {} end
-            bladehits = {}
-            for _, v in pairs(workspace.Characters:GetChildren()) do
-                if v.Name ~= game.Players.LocalPlayer.Name and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 
-                and (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 65 then
-                    table.insert(bladehits, v)
-                end
-            end
-            return bladehits
-        end
-        
-        function Funcs:Attack()
-            if not FastAttackEnabled then return end
-            local bladehits = {}
-            for r,v in pairs(GetAllBladeHits()) do
-                table.insert(bladehits, v)
-            end
-            for r,v in pairs(Getplayerhit()) do
-                table.insert(bladehits, v)
-            end
-            if #bladehits == 0 then return end
-            local args = {
-                [1] = nil;
-                [2] = {},
-                [4] = "078da341"
-            }
-            for r, v in pairs(bladehits) do
-                Register_Attack:FireServer(0)
-                if not args[1] then
-                    args[1] = v.Head
-                end
-                args[2][r] = {
-                    [1] = v,
-                    [2] = v.HumanoidRootPart
-                }
-            end
-            Register_Hit:FireServer(unpack(args))
-        end
-        
-        spawn(function()
-            while FastAttackEnabled and task.wait(0.1) do
-                pcall(Funcs.Attack, Funcs)
-            end
-        end)
-    end)
-end
-
-v496:AddToggle({
-    Name = "Fast Attack",
-    Default = true,
-    Callback = function(Value)
-        if Value then
-            StartFastAttack()
-        else
-            StopFastAttack()
-        end
-    end
-})
-
-spawn(function()
-    while task.wait(5) do
-        if FastAttackEnabled and not FastAttackThread then
-            StartFastAttack()
-        end
-    end
-end)
+local Paragraph = v496:AddParagraph({"Unban FastAttack M1 Fruit", ""})
+loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
 v496:AddToggle({
     Name = "Bring Mod",
     Description = "",
