@@ -10206,6 +10206,18 @@ v496:AddButton({
         end
     end
 })
+local RunService = game:GetService("RunService")
+
+v496:AddToggle({
+	Name = "White Screen",
+	Default = false,
+	Callback = function(Value)
+
+		_G.WhiteScreen = Value
+		RunService:Set3dRenderingEnabled(not Value)
+
+	end
+})
 v496:AddButton({
     Title = "Rejoin Server",
     Callback = function()
