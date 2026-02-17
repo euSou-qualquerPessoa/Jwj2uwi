@@ -4234,6 +4234,52 @@ spawn(function()
         end
     end
 end)
+local _ = v485:AddSection({"Valentine"})
+
+v485:AddParagraph({"Warn", "Use farm bones to get hearts!"})
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local CommF = Remotes:WaitForChild("CommF_")
+
+_G.AutoValentineGacha = false
+
+v485:AddToggle({
+    Name = "Auto Valentine Random",
+    Description = "Auto Gacha Valentine Roll",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoValentineGacha = Value
+    end
+})
+
+local function fireActivity()
+    local reportRemote = ReplicatedStorage:FindFirstChild("ReportActivity", true)
+    if reportRemote and reportRemote:IsA("RemoteEvent") then
+        pcall(function()
+            reportRemote:FireServer("GachaWindow")
+        end)
+    end
+end
+
+task.spawn(function()
+    while task.wait(2.5) do
+        if not _G.AutoValentineGacha then continue end
+
+        pcall(function()
+            CommF:InvokeServer("Cousin")
+            task.wait(0.1)
+
+            fireActivity()
+            task.wait(0.1)
+
+            CommF:InvokeServer("Cousin", "CheckCanBuyType", "ValentinesGacha26")
+            task.wait(0.1)
+
+            CommF:InvokeServer("Cousin", "ValentinesGacha26")
+        end)
+    end
+end)
 local _ = v485:AddSection({"Tyrant of the Skies"})
 local v548 = v485:AddParagraph({Title = "Check Eyes Status", Content = "Loading..."})
 task.spawn(function()
@@ -10059,23 +10105,43 @@ spawn(function()
         end)
     end
 end)
+_G.AutoRaceV4 = false
+
 v496:AddToggle({
     Title = "Auto Active Race V4",
     Description = "",
     Value = false,
-    Callback = function(v1172)
-        _G.AutoRaceV4 = v1172
+    Callback = function(state)
+        _G.AutoRaceV4 = state
     end
 })
+
 spawn(function()
-    while wait() do
-        pcall(function()
-            if _G.AutoRaceV4 then
-                game:GetService("VirtualInputManager"):SendKeyEvent(true, "Y", false, game)
-                wait()
-                game:GetService("VirtualInputManager"):SendKeyEvent(false, "Y", false, game)
-            end
-        end)
+    while task.wait(0.5) do
+        if _G.AutoRaceV4 then
+            pcall(function()
+
+                local player = game.Players.LocalPlayer
+                local char = player.Character
+                if not char then return end
+
+                local energy = char:FindFirstChild("RaceEnergy")
+                local transformed = char:FindFirstChild("RaceTransformed")
+
+                if energy and transformed then
+                    if energy.Value >= 1 and not transformed.Value then
+                        
+                        local vim = game:GetService("VirtualInputManager")
+                        vim:SendKeyEvent(true, Enum.KeyCode.Y, false, game)
+                        task.wait(0.1)
+                        vim:SendKeyEvent(false, Enum.KeyCode.Y, false, game)
+
+                        task.wait(5)
+                    end
+                end
+
+            end)
+        end
     end
 end)
 v496:AddToggle({Title = "Infinite Soru", Value = false, Callback = function(v1173)
@@ -10366,4 +10432,127 @@ v496:AddButton({
 v496:AddButton({Title = "Server Hop", Callback = function()
     Hop()
 end})
+    function CheckAntiCheatBypass()
+        for i,v in pairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("LocalScript") then
+                if v.Name == "General" or v.Name == "Shiftlock"  or v.Name == "FallDamage" or v.Name == "4444" or v.Name == "CamBob" or v.Name == "JumpCD" or v.Name == "Looking" or v.Name == "Run" then
+                    v:Destroy()
+                end
+            end
+         end
+         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerScripts:GetDescendants()) do
+            if v:IsA("LocalScript") then
+                if v.Name == "RobloxMotor6DBugFix" or v.Name == "Clans"  or v.Name == "Codes" or v.Name == "CustomForceField" or v.Name == "MenuBloodSp"  or v.Name == "PlayerList" then
+                    v:Destroy()
+                end
+            end
+         end
+        end
+    
+    CheckAntiCheatBypass()
+    
+    v496:AddToggle({
+        Name = "Antiban",
+        Default = true,
+        Callback = function(Value)
+            _G.AntiCheat = Value
+            CheckAntiCheatBypass()
+        end    
+    })
+print("--[[Hop Server If You Meet Game Admin]]--")
+
+local Admins = {
+    red_game43 = true,
+    rip_indra = true,
+    Axiore = true,
+    Polkster = true,
+    wenlocktoad = true,
+    Daigrock = true,
+    toilamvidamme = true,
+    oofficialnoobie = true,
+    Uzoth = true,
+    Azarth = true,
+    arlthmetic = true,
+    Death_King = true,
+    Lunoven = true,
+    TheGreateAced = true,
+    rip_fud = true,
+    drip_mama = true,
+    layandikit12 = true,
+    Hingoi = true,
+}
+
+task.spawn(function()
+    while task.wait(1) do
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if Admins[player.Name] then
+                Hop()
+                break
+            end
+        end
+    end
+end)
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+
+local Player = Players.LocalPlayer
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+
+_G.AutoRejoin30m = false
+local RejoinRunning = false
+
+-- ===== PEGAR SERVIDOR DIFERENTE =====
+function GetNewServer()
+    local Servers = {}
+    
+    local req = game:HttpGet(
+        "https://games.roblox.com/v1/games/"..PlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+    )
+    
+    local data = HttpService:JSONDecode(req)
+
+    for _, server in pairs(data.data) do
+        if server.playing < server.maxPlayers and server.id ~= JobId then
+            table.insert(Servers, server.id)
+        end
+    end
+
+    if #Servers > 0 then
+        return Servers[math.random(1, #Servers)]
+    end
+end
+
+-- ===== TOGGLE REDZLIB =====
+v496:AddToggle({
+    Name = "Anti-reset",
+    Description = "Server hop every 30 minutes",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoRejoin30m = Value
+        
+        if Value and not RejoinRunning then
+            RejoinRunning = true
+            
+            task.spawn(function()
+                while _G.AutoRejoin30m do
+                    task.wait(1800) -- 30 minutos
+                    
+                    if not _G.AutoRejoin30m then break end
+                    
+                    local NewServer = GetNewServer()
+                    
+                    if NewServer then
+                        TeleportService:TeleportToPlaceInstance(PlaceId, NewServer, Player)
+                    else
+                        TeleportService:Teleport(PlaceId, Player)
+                    end
+                end
+                
+                RejoinRunning = false
+            end)
+        end
+    end
+})
 return redzlib
