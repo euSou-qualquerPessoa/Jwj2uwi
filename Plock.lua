@@ -4280,6 +4280,96 @@ task.spawn(function()
         end)
     end
 end)
+
+if World3 then
+local _ = v485:AddSection({"Kill Player"})
+local v1123 = {}
+for _, v1125 in pairs(game.Players:GetPlayers()) do
+    table.insert(v1123, v1125.Name)
+end
+local _ = nil
+v485:AddButton({
+    Title = "Get Quest Elite Players",
+    Description = "",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
+    end
+})
+v485:AddToggle({
+    Title = "Auto Kill Player Quest",
+    Description = "",
+    Value = false,
+    Callback = function(v1127)
+        _G.AutoPlayerHunter = v1127
+        StopTween(_G.AutoPlayerHunter)
+    end
+})
+spawn(function()
+    game:GetService("RunService").Heartbeat:connect(function()
+        pcall(function()
+            if _G.AutoPlayerHunter and game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid") then
+                game:GetService("Players").LocalPlayer.Character.Humanoid:ChangeState(11)
+            end
+        end)
+    end)
+end)
+spawn(function()
+    pcall(function()
+        while wait(0.1) do
+            if _G.AutoPlayerHunter and game:GetService("Players").LocalPlayer.PlayerGui.Main.PvpDisabled.Visible == true then
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("EnablePvp")
+            end
+        end
+    end)
+end)
+spawn(function()
+    while wait() do
+        if _G.AutoPlayerHunter then
+            if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
+                wait(0.5)
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
+            else
+                for _, v1129 in pairs(game:GetService("Workspace").Characters:GetChildren()) do
+                    if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, v1129.Name) then
+                        repeat
+                            wait()
+                            AutoHaki()
+                            EquipWeapon(_G.SelectWeapon)
+                            Useskill = true
+                            topos(v1129.HumanoidRootPart.CFrame * CFrame.new(1, 7, 3))
+                            v1129.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                            game:GetService("VirtualUser"):CaptureController()
+                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                        until _G.AutoPlayerHunter == false or v1129.Humanoid.Health <= 0
+                        Useskill = false
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
+                    end
+                end
+            end
+        end
+    end
+end)
+v485:AddToggle({
+    Name = "Auto Safe Mode",
+    Description = "",
+    Default = false,
+    Callback = function(v1130)
+        _G.SafeMode = v1130
+        StopTween(_G.SafeMode)
+    end
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            if _G.SafeMode then
+                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 200, 0)
+            end
+        end
+    end)
+end)
+end
+
+if World3 then
 local _ = v485:AddSection({"Tyrant of the Skies"})
 local v548 = v485:AddParagraph({Title = "Check Eyes Status", Content = "Loading..."})
 task.spawn(function()
@@ -4531,6 +4621,7 @@ task.spawn(function()
         end
     end
 end)
+end
 local _ = v485:AddSection({"Farm Bones"})
 local v589 = v485:AddParagraph({Title = "Check Bone", Content = "Loading..."})
 task.spawn(function()
@@ -8909,266 +9000,66 @@ v494:AddToggle({
         end
     end
 })
-local _ = v494:AddSection({"Aimbot skill"})
-local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
 
-local AimbotEnabled = false
-local AimPlayers = false
-local AimMobs = false
-
-v494:AddToggle({
-    Name = "Enable Aimbot Skill",
-    Default = false,
-    Callback = function(v)
-        AimbotEnabled = v
-
-        if not v then
-            v1:Pause()
-            v1:SetPlayerSilentAim(false)
-            v1:SetNPCSilentAim(false)
-        else
-            if AimPlayers then
-                v1:SetPlayerSilentAim(true)
-            end
-            if AimMobs then
-                v1:SetNPCSilentAim(true)
-            end
-            v1:Restore()
-        end
-    end
-})
-
-v494:AddToggle({
-    Name = "Aimbot On Players",
-    Default = false,
-    Callback = function(v)
-        AimPlayers = v
-
-        if v then
-            AimMobs = false
-            v1:SetNPCSilentAim(false)
-        end
-
-        if AimbotEnabled then
-            v1:SetPlayerSilentAim(v)
-        else
-            v1:SetPlayerSilentAim(false)
-        end
-    end
-})
-
-v494:AddToggle({
-    Name = "Aimbot On Mobs",
-    Default = false,
-    Callback = function(v)
-        AimMobs = v
-
-        if v then
-            AimPlayers = false
-            v1:SetPlayerSilentAim(false)
-        end
-
-        if AimbotEnabled then
-            v1:SetNPCSilentAim(v)
-        else
-            v1:SetNPCSilentAim(false)
-        end
-    end
-})
-local _ = v494:AddSection({"Teleport Player"})
-local v1123 = {}
-for _, v1125 in pairs(game.Players:GetPlayers()) do
-    table.insert(v1123, v1125.Name)
-end
-local _ = nil
-v494:AddButton({
-    Title = "Get Quest Elite Players",
-    Description = "",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
-    end
-})
-v494:AddToggle({
-    Title = "Auto Kill Player Quest",
-    Description = "",
-    Value = false,
-    Callback = function(v1127)
-        _G.AutoPlayerHunter = v1127
-        StopTween(_G.AutoPlayerHunter)
-    end
-})
-spawn(function()
-    game:GetService("RunService").Heartbeat:connect(function()
-        pcall(function()
-            if _G.AutoPlayerHunter and game:GetService("Players").LocalPlayer.Character:FindFirstChild("Humanoid") then
-                game:GetService("Players").LocalPlayer.Character.Humanoid:ChangeState(11)
-            end
-        end)
-    end)
-end)
-spawn(function()
-    pcall(function()
-        while wait(0.1) do
-            if _G.AutoPlayerHunter and game:GetService("Players").LocalPlayer.PlayerGui.Main.PvpDisabled.Visible == true then
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("EnablePvp")
-            end
-        end
-    end)
-end)
-spawn(function()
-    while wait() do
-        if _G.AutoPlayerHunter then
-            if game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
-                wait(0.5)
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("PlayerHunter")
-            else
-                for _, v1129 in pairs(game:GetService("Workspace").Characters:GetChildren()) do
-                    if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, v1129.Name) then
-                        repeat
-                            wait()
-                            AutoHaki()
-                            EquipWeapon(_G.SelectWeapon)
-                            Useskill = true
-                            topos(v1129.HumanoidRootPart.CFrame * CFrame.new(1, 7, 3))
-                            v1129.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                            game:GetService("VirtualUser"):CaptureController()
-                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                        until _G.AutoPlayerHunter == false or v1129.Humanoid.Health <= 0
-                        Useskill = false
-                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("AbandonQuest")
-                    end
-                end
-            end
-        end
-    end
-end)
-v494:AddToggle({
-    Name = "Auto Safe Mode",
-    Description = "",
-    Default = false,
-    Callback = function(v1130)
-        _G.SafeMode = v1130
-        StopTween(_G.SafeMode)
-    end
-})
-spawn(function()
-    pcall(function()
-        while wait() do
-            if _G.SafeMode then
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0, 200, 0)
-            end
-        end
-    end)
-end)
-local _ = v494:AddSection({"Buff"})
-local Players = game:GetService("Players")
-local l_LocalPlayer_18 = Players.LocalPlayer
-
--- arquivos de save
-local SPEED_SAVE_FILE = "walkspeed_save.txt"
-local JUMP_SAVE_FILE = "jump_save.txt"
-
--- carrega valores salvos
-if isfile(SPEED_SAVE_FILE) then
-	getgenv().WalkSpeedValue = tonumber(readfile(SPEED_SAVE_FILE)) or 58
-else
-	getgenv().WalkSpeedValue = 58
-end
-
-if isfile(JUMP_SAVE_FILE) then
-	getgenv().JumpValue = tonumber(readfile(JUMP_SAVE_FILE)) or 58
-else
-	getgenv().JumpValue = 58
-end
-
-local function v1135(v1133)
-	local v1134 = v1133:WaitForChild("Humanoid", 5)
-	if v1134 then
-		v1134.WalkSpeed = getgenv().WalkSpeedValue
-		v1134.JumpPower = getgenv().JumpValue
-
-		v1134:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-			v1134.WalkSpeed = getgenv().WalkSpeedValue
-		end)
-
-		v1134:GetPropertyChangedSignal("JumpPower"):Connect(function()
-			v1134.JumpPower = getgenv().JumpValue
-		end)
-	end
-end
-
-l_LocalPlayer_18.CharacterAdded:Connect(function(v1136)
-	v1135(v1136)
-end)
-
-if l_LocalPlayer_18.Character then
-	v1135(l_LocalPlayer_18.Character)
-end
-
-v494:AddSlider({
-	Title = "Speed",
-	Min = 26,
-	Max = 300,
-	Default = getgenv().WalkSpeedValue,
-	Callback = function(v1137)
-		getgenv().WalkSpeedValue = v1137
-		writefile(SPEED_SAVE_FILE, tostring(v1137))
-
-		local v1138 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
-		if v1138 then
-			v1138.WalkSpeed = v1137
-		end
-	end
-})
-
-v494:AddSlider({
-	Title = "Jump",
-	Min = 50,
-	Max = 500,
-	Default = getgenv().JumpValue,
-	Callback = function(v1139)
-		getgenv().JumpValue = v1139
-		writefile(JUMP_SAVE_FILE, tostring(v1139))
-
-		local v1140 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
-		if v1140 then
-			v1140.JumpPower = v1139
-		end
-	end
-})
-v494:AddToggle({
-    Name = "Delete Lava",
-    Description = "",
-    Default = false,
-    Callback = function(v1141)
-        _G.RemoveLava = v1141
-    end
-})
-spawn(function()
-    while task.wait(1) do
-        if _G.RemoveLava then
-            for _, v1143 in pairs(workspace:GetDescendants()) do
-                do
-                    local l_v1143_0 = v1143
-                    if l_v1143_0:IsA("BasePart") and string.lower(l_v1143_0.Name):find("lava") then
-                        pcall(function()
-                            l_v1143_0:Destroy()
-                        end)
-                    end
-                end
-            end
-        end
-    end
-end)
 local _ = v494:AddSection({"Esp"})
+local ESP_SIZE_FILE = "esp_size_save.txt"
+
+if isfile(ESP_SIZE_FILE) then
+	_G.ESPSize = tonumber(readfile(ESP_SIZE_FILE)) or 24
+else
+	_G.ESPSize = 24
+	writefile(ESP_SIZE_FILE, "24")
+end
+
+v494:AddSlider({
+	Name = "ESP Size",
+	Min = 10,
+	Max = 40,
+	Default = _G.ESPSize,
+	Callback = function(Value)
+		_G.ESPSize = Value
+		writefile(ESP_SIZE_FILE, tostring(Value))
+
+		for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+			if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+				local hrp = player.Character.HumanoidRootPart
+				local esp = hrp:FindFirstChild("PlayerESP")
+
+				if esp then
+					for _, obj in pairs(esp:GetChildren()) do
+						if obj:IsA("TextLabel") then
+							obj.TextSize = Value
+						end
+					end
+				end
+			end
+		end
+	end
+})
+
+for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+	if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+		local hrp = player.Character.HumanoidRootPart
+		local esp = hrp:FindFirstChild("PlayerESP")
+
+		if esp then
+			for _, obj in pairs(esp:GetChildren()) do
+				if obj:IsA("TextLabel") then
+					obj.TextSize = _G.ESPSize
+				end
+			end
+		end
+	end
+end
+
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
 
--- arquivo de save (igual speed/jump)
+local LocalPlayer = Players.LocalPlayer
 local ESP_SAVE_FILE = "esp_players_save.txt"
 
--- estado inicial
+-- Estado salvo
 local ESPPlayer = false
 if isfile(ESP_SAVE_FILE) then
 	ESPPlayer = readfile(ESP_SAVE_FILE) == "true"
@@ -9176,114 +9067,151 @@ else
 	writefile(ESP_SAVE_FILE, "false")
 end
 
--- função ESP
+local Connections = {}
+
+-- Remove ESP
+local function RemoveESP(player)
+	if player.Character then
+		local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			local esp = hrp:FindFirstChild("PlayerESP")
+			if esp then
+				esp:Destroy()
+			end
+		end
+	end
+
+	if Connections[player] then
+		Connections[player]:Disconnect()
+		Connections[player] = nil
+	end
+end
+
+-- Criar ESP
 local function CreateESP(player)
 	if player == LocalPlayer then return end
+	if not ESPPlayer then return end
+	if not player.Character then return end
 
-	local function apply(char)
-		local hrp = char:WaitForChild("HumanoidRootPart", 5)
-		local hum = char:WaitForChild("Humanoid", 5)
-		if not hrp or not hum then return end
+	local char = player.Character
+	local hrp = char:WaitForChild("HumanoidRootPart", 3)
+	local hum = char:WaitForChild("Humanoid", 3)
 
-		if hrp:FindFirstChild("PlayerESP") then
-			hrp.PlayerESP:Destroy()
+	if not hrp or not hum then return end
+
+	RemoveESP(player)
+
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "PlayerESP"
+	gui.Adornee = hrp
+	gui.Size = UDim2.new(0, 220, 0, 40)
+	gui.StudsOffset = Vector3.new(0, 3, 0)
+	gui.AlwaysOnTop = true
+	gui.MaxDistance = 999999
+	gui.LightInfluence = 0
+	gui.Parent = hrp
+
+	local nameLabel = Instance.new("TextLabel")
+	nameLabel.BackgroundTransparency = 1
+	nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+	nameLabel.Position = UDim2.new(0, 0, 0, 0)
+	nameLabel.TextColor3 = Color3.fromRGB(210,210,210)
+	nameLabel.TextStrokeTransparency = 0
+	nameLabel.TextSize = 24
+	nameLabel.Font = Enum.Font.SourceSans
+	nameLabel.TextXAlignment = Enum.TextXAlignment.Center
+	nameLabel.TextYAlignment = Enum.TextYAlignment.Center
+	nameLabel.Parent = gui
+
+	local hpLabel = Instance.new("TextLabel")
+	hpLabel.BackgroundTransparency = 1
+	hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
+	hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
+	hpLabel.TextColor3 = Color3.fromRGB(0,255,0)
+	hpLabel.TextStrokeTransparency = 0
+	hpLabel.TextSize = 24
+	hpLabel.Font = Enum.Font.SourceSans
+	hpLabel.TextXAlignment = Enum.TextXAlignment.Center
+	hpLabel.TextYAlignment = Enum.TextYAlignment.Center
+	hpLabel.Parent = gui
+
+	Connections[player] = RunService.RenderStepped:Connect(function()
+
+		if not ESPPlayer then
+			RemoveESP(player)
+			return
 		end
 
-		if not ESPPlayer then return end
+		if not player.Character or hum.Health <= 0 then
+			RemoveESP(player)
+			return
+		end
 
-		local gui = Instance.new("BillboardGui")
-		gui.Name = "PlayerESP"
-		gui.Adornee = hrp
-		gui.Size = UDim2.new(0, 200, 0, 50)
-		gui.StudsOffset = Vector3.new(0, 2.5, 0)
-		gui.AlwaysOnTop = true
-		gui.Parent = hrp
+		local myChar = LocalPlayer.Character
+		if not myChar then return end
 
-		local nameLabel = Instance.new("TextLabel")
-		nameLabel.BackgroundTransparency = 1
-		nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-		nameLabel.Position = UDim2.new(0, 0, 0, 0)
-		nameLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-		nameLabel.TextStrokeTransparency = 0
-		nameLabel.TextScaled = true
-		nameLabel.Font = Enum.Font.SourceSansBold
-		nameLabel.Parent = gui
+		local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+		if not myHRP then return end
 
-		local hpLabel = Instance.new("TextLabel")
-		hpLabel.BackgroundTransparency = 1
-		hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
-		hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
-		hpLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-		hpLabel.TextStrokeTransparency = 0
-		hpLabel.TextScaled = true
-		hpLabel.Font = Enum.Font.SourceSansBold
-		hpLabel.Parent = gui
+		local distance = math.floor(
+			(myHRP.Position - hrp.Position).Magnitude
+		)
 
-		RunService.RenderStepped:Connect(function()
-			if not ESPPlayer or not char or not hrp or not hum or hum.Health <= 0 then
-				if gui then gui:Destroy() end
-				return
-			end
+		nameLabel.Text = player.Name .. " [" .. distance .. "m]"
+		hpLabel.Text = "[" .. math.floor(hum.Health) .. "/" .. math.floor(hum.MaxHealth) .. "]"
+	end)
+end
 
-			local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude)
-			nameLabel.Text = player.Name .. " [" .. dist .. "m]"
-			hpLabel.Text = "[" .. math.floor(hum.Health) .. "/" .. math.floor(hum.MaxHealth) .. "]"
-		end)
-	end
+-- Setup jogador (resolve spawn + respawn)
+local function SetupPlayer(player)
+	if player == LocalPlayer then return end
+
+	player.CharacterAdded:Connect(function()
+		if ESPPlayer then
+			task.wait(0.2)
+			CreateESP(player)
+		end
+	end)
 
 	if player.Character then
-		apply(player.Character)
-	end
-
-	player.CharacterAdded:Connect(apply)
-end
-
--- ativar ESP geral
-local function EnableESP()
-	for _,p in pairs(Players:GetPlayers()) do
-		CreateESP(p)
+		task.wait(0.2)
+		CreateESP(player)
 	end
 end
 
--- desativar ESP geral
-local function DisableESP()
-	for _,p in pairs(Players:GetPlayers()) do
-		if p ~= LocalPlayer and p.Character then
-			local hrp = p.Character:FindFirstChild("HumanoidRootPart")
-			if hrp and hrp:FindFirstChild("PlayerESP") then
-				hrp.PlayerESP:Destroy()
-			end
-		end
-	end
+-- Aplicar para jogadores já no servidor
+for _,player in ipairs(Players:GetPlayers()) do
+	SetupPlayer(player)
 end
 
--- toggle redzlib
+-- Jogadores novos
+Players.PlayerAdded:Connect(function(player)
+	SetupPlayer(player)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+	RemoveESP(player)
+end)
+
+-- Toggle da sua lib
 v494:AddToggle({
 	Title = "ESP Players",
-	Value = ESPPlayer,
+	Default = ESPPlayer,
 	Callback = function(v)
 		ESPPlayer = v
 		writefile(ESP_SAVE_FILE, tostring(v))
 
-		if v then
-			EnableESP()
-		else
-			DisableESP()
+		for _,player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer then
+				if v then
+					CreateESP(player)
+				else
+					RemoveESP(player)
+				end
+			end
 		end
 	end
 })
-
--- boot automático (igual speed/jump)
-if ESPPlayer then
-	EnableESP()
-end
-
--- player novo
-Players.PlayerAdded:Connect(function(p)
-	if ESPPlayer then
-		CreateESP(p)
-	end
-end)
 v494:AddToggle({
     Title = "Esp Chest",
     Value = false,
@@ -10063,6 +9991,106 @@ function InMyNetWork(v1168)
         return isnetworkowner(v1168)
     end
 end
+local Players = game:GetService("Players")
+local l_LocalPlayer_18 = Players.LocalPlayer
+
+-- arquivos de save
+local SPEED_SAVE_FILE = "walkspeed_save.txt"
+local JUMP_SAVE_FILE = "jump_save.txt"
+
+-- carrega valores salvos
+if isfile(SPEED_SAVE_FILE) then
+	getgenv().WalkSpeedValue = tonumber(readfile(SPEED_SAVE_FILE)) or 58
+else
+	getgenv().WalkSpeedValue = 58
+end
+
+if isfile(JUMP_SAVE_FILE) then
+	getgenv().JumpValue = tonumber(readfile(JUMP_SAVE_FILE)) or 58
+else
+	getgenv().JumpValue = 58
+end
+
+local function v1135(v1133)
+	local v1134 = v1133:WaitForChild("Humanoid", 5)
+	if v1134 then
+		v1134.WalkSpeed = getgenv().WalkSpeedValue
+		v1134.JumpPower = getgenv().JumpValue
+
+		v1134:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+			v1134.WalkSpeed = getgenv().WalkSpeedValue
+		end)
+
+		v1134:GetPropertyChangedSignal("JumpPower"):Connect(function()
+			v1134.JumpPower = getgenv().JumpValue
+		end)
+	end
+end
+
+l_LocalPlayer_18.CharacterAdded:Connect(function(v1136)
+	v1135(v1136)
+end)
+
+if l_LocalPlayer_18.Character then
+	v1135(l_LocalPlayer_18.Character)
+end
+
+v496:AddSlider({
+	Title = "Speed",
+	Min = 26,
+	Max = 300,
+	Default = getgenv().WalkSpeedValue,
+	Callback = function(v1137)
+		getgenv().WalkSpeedValue = v1137
+		writefile(SPEED_SAVE_FILE, tostring(v1137))
+
+		local v1138 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
+		if v1138 then
+			v1138.WalkSpeed = v1137
+		end
+	end
+})
+
+v496:AddSlider({
+	Title = "Jump",
+	Min = 50,
+	Max = 500,
+	Default = getgenv().JumpValue,
+	Callback = function(v1139)
+		getgenv().JumpValue = v1139
+		writefile(JUMP_SAVE_FILE, tostring(v1139))
+
+		local v1140 = l_LocalPlayer_18.Character and l_LocalPlayer_18.Character:FindFirstChild("Humanoid")
+		if v1140 then
+			v1140.JumpPower = v1139
+		end
+	end
+})
+v496:AddToggle({
+    Name = "Delete Lava",
+    Description = "",
+    Default = false,
+    Callback = function(v1141)
+        _G.RemoveLava = v1141
+    end
+})
+spawn(function()
+    while task.wait(1) do
+        if _G.RemoveLava then
+            for _, v1143 in pairs(workspace:GetDescendants()) do
+                do
+                    local l_v1143_0 = v1143
+                    if l_v1143_0:IsA("BasePart") and string.lower(l_v1143_0.Name):find("lava") then
+                        pcall(function()
+                            l_v1143_0:Destroy()
+                        end)
+                    end
+                end
+            end
+        end
+    end
+end)
+
 v496:AddToggle({
     Title = "Set Home Point",
     Description = "",
@@ -10235,8 +10263,18 @@ spawn(function()
         end)
     end
 end)
+
 local Lighting = game:GetService("Lighting")
 local FULLBRIGHT_SAVE_FILE = "fullbright_save.txt"
+
+-- Salvar valores originais
+local OriginalLighting = {
+	Ambient = Lighting.Ambient,
+	ColorShift_Bottom = Lighting.ColorShift_Bottom,
+	ColorShift_Top = Lighting.ColorShift_Top,
+	Brightness = Lighting.Brightness,
+	GlobalShadows = Lighting.GlobalShadows
+}
 
 local function ApplyFullBright(state)
 	if state then
@@ -10246,17 +10284,21 @@ local function ApplyFullBright(state)
 		Lighting.Brightness = 3
 		Lighting.GlobalShadows = false
 	else
-		Lighting.Ambient = Color3.new(0, 0, 0)
-		Lighting.ColorShift_Bottom = Color3.new(0, 0, 0)
-		Lighting.ColorShift_Top = Color3.new(0, 0, 0)
-		Lighting.Brightness = 1
-		Lighting.GlobalShadows = true
+		-- Restaurar original
+		Lighting.Ambient = OriginalLighting.Ambient
+		Lighting.ColorShift_Bottom = OriginalLighting.ColorShift_Bottom
+		Lighting.ColorShift_Top = OriginalLighting.ColorShift_Top
+		Lighting.Brightness = OriginalLighting.Brightness
+		Lighting.GlobalShadows = OriginalLighting.GlobalShadows
 	end
 end
 
 local FullBrightEnabled = false
+
 if isfile(FULLBRIGHT_SAVE_FILE) then
 	FullBrightEnabled = readfile(FULLBRIGHT_SAVE_FILE) == "true"
+else
+	writefile(FULLBRIGHT_SAVE_FILE, "false")
 end
 
 ApplyFullBright(FullBrightEnabled)
@@ -10300,37 +10342,28 @@ v496:AddButton({
         game.Players.localPlayer.PlayerGui.Main.Titles.Visible = true
     end
 })
+
 v496:AddButton({
-    Title = "FPS Boost",
-    Description = "",
-    Callback = function()
-        local v1210 = true
-        local l_game_0 = game
-        local l_Workspace_2 = l_game_0.Workspace
-        local _ = l_game_0.Lighting
-        local _ = l_Workspace_2.Terrain
-        settings().Rendering.QualityLevel = "Level01"
-        for _, v1216 in pairs(l_game_0:GetDescendants()) do
-            if not v1216:IsA("Part") and not v1216:IsA("Union") and not v1216:IsA("CornerWedgePart") and not v1216:IsA("TrussPart") then
-                if v1216:IsA("Decal") or v1216:IsA("Texture") and v1210 then
-                    v1216.Transparency = 1
-                elseif v1216:IsA("ParticleEmitter") or v1216:IsA("Trail") then
-                    v1216.Lifetime = NumberRange.new(0)
-                elseif not v1216:IsA("Explosion") then
-                    if v1216:IsA("Fire") or v1216:IsA("SpotLight") or v1216:IsA("Smoke") then
-                        v1216.Enabled = false
-                    end
-                else
-                    v1216.BlastPressure = 1
-                    v1216.BlastRadius = 1
-                end
-            else
-                v1216.Material = "Plastic"
-                v1216.Reflectance = 0
-            end
-        end
-    end
+	Name = "FPS Boost",
+	Callback = function()
+		for _, v in ipairs(game:GetDescendants()) do
+			if v:IsA("BasePart") then
+				v.Material = Enum.Material.SmoothPlastic
+				v.Reflectance = 0
+			elseif v:IsA("Decal") or v:IsA("Texture") then
+				v:Destroy()
+			elseif v:IsA("ParticleEmitter") or v:IsA("Trail") then
+				v.Enabled = false
+			elseif v:IsA("Lighting") then
+				v.GlobalShadows = false
+				v.FogEnd = 1e10
+				v.Brightness = 0
+			end
+		end
+		setfpscap(60)
+	end
 })
+
 local v1218 = {
     "NOMOREHACK",
     "BANEXPLOIT",
@@ -10555,4 +10588,130 @@ v496:AddToggle({
         end
     end
 })
+
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local CoreGui = game:GetService("CoreGui")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "RedzNotification"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.DisplayOrder = 999999
+gui.Parent = CoreGui
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 75) -- menor
+frame.Position = UDim2.new(1, 400, 1, -30)
+frame.AnchorPoint = Vector2.new(1, 1)
+frame.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = frame
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(60, 60, 60)
+stroke.Thickness = 1
+stroke.Parent = frame
+
+local iconBg = Instance.new("Frame")
+iconBg.Size = UDim2.new(0, 50, 0, 50)
+iconBg.Position = UDim2.new(0, 12, 0.5, -25)
+iconBg.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+iconBg.BorderSizePixel = 0
+iconBg.Parent = frame
+
+local iconCorner = Instance.new("UICorner")
+iconCorner.CornerRadius = UDim.new(0, 8)
+iconCorner.Parent = iconBg
+
+local icon = Instance.new("ImageLabel")
+icon.Size = UDim2.new(1, -8, 1, -8)
+icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+icon.AnchorPoint = Vector2.new(0.5, 0.5)
+icon.BackgroundTransparency = 1
+icon.Image = "rbxassetid://71107770464806"
+icon.Parent = iconBg
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -115, 0, 25)
+title.Position = UDim2.new(0, 75, 0, 10)
+title.BackgroundTransparency = 1
+title.Text = "Script Loaded"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 17
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
+
+local description = Instance.new("TextLabel")
+description.Size = UDim2.new(1, -115, 0, 30)
+description.Position = UDim2.new(0, 75, 0, 35)
+description.BackgroundTransparency = 1
+description.TextWrapped = true
+description.Text = 'redz Hub loaded successfully! Press "LeftControl" to minimize.'
+description.Font = Enum.Font.Gotham
+description.TextSize = 12
+description.TextColor3 = Color3.fromRGB(200, 200, 200)
+description.TextXAlignment = Enum.TextXAlignment.Left
+description.TextYAlignment = Enum.TextYAlignment.Top
+description.Parent = frame
+
+-- Timer branco
+local duration = 5
+local timerLabel = Instance.new("TextLabel")
+timerLabel.Size = UDim2.new(0, 45, 0, 20)
+timerLabel.Position = UDim2.new(1, -50, 0, 8)
+timerLabel.BackgroundTransparency = 1
+timerLabel.Font = Enum.Font.GothamBold
+timerLabel.TextSize = 14
+timerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+timerLabel.TextXAlignment = Enum.TextXAlignment.Right
+timerLabel.Parent = frame
+
+-- Entrando
+local tweenIn = TweenService:Create(
+	frame,
+	TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	{Position = UDim2.new(1, -20, 1, -30)}
+)
+
+tweenIn:Play()
+tweenIn.Completed:Wait()
+
+-- Contagem regressiva suave
+local startTime = tick()
+local connection
+
+connection = RunService.RenderStepped:Connect(function()
+	local elapsed = tick() - startTime
+	local remaining = math.clamp(duration - elapsed, 0, duration)
+	timerLabel.Text = string.format("%.1f", remaining)
+
+	if remaining <= 0 then
+		connection:Disconnect()
+	end
+end)
+
+task.wait(duration)
+
+-- Saindo
+local tweenOut = TweenService:Create(
+	frame,
+	TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+	{Position = UDim2.new(1, 400, 1, -30)}
+)
+
+tweenOut:Play()
+tweenOut.Completed:Wait()
+
+gui:Destroy()
+
 return redzlib
