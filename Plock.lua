@@ -3726,7 +3726,7 @@ function CheckItemBPCRBPCR(v463)
         end
     end
 end
-local vu32 = loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Library/c27d57a5d729eb424d534254b5ca64cf109a39c6/V5/Source.lua"))()
+local vu32 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Library-ui/refs/heads/main/Redzhubui"))()
 local v466 = vu32:MakeWindow({
     Title = "redz hub : Blox Fruits",
     SubTitle = "by real_redz",
@@ -3749,6 +3749,7 @@ local v498 = v466:MakeTab({"Islands", "palmtree"})
 local v491 = v466:MakeTab({"Raid/Fruits", "cherry"})
 local v497 = v466:MakeTab({"Stats", "Signal"})
 local v493 = v466:MakeTab({"Teleport", "locate"})
+local v499 = v466:MakeTab({"Status", "Scroll"})
 local v494 = v466:MakeTab({"Visual", "user"})
 local v495 = v466:MakeTab({"Shop", "shoppingCart"})
 local v496 = v466:MakeTab({"Misc", "settings"})
@@ -5041,6 +5042,7 @@ spawn(function()
     end
 end)
 local _ = v485:AddSection({"Auto Farm Chest And Berry"})
+
 v485:AddToggle({
     Name = "Auto Collect Berry",
     Description = "",
@@ -5419,6 +5421,7 @@ task.spawn(function()
         end
     end
 end)
+
 local _ = v486:AddSection({"Auto Fishing"})
 v486:AddToggle({
     Title = "Auto Fishing",
@@ -8804,6 +8807,146 @@ v493:AddButton({
     end
 })
 
+
+local TyrantStatus = v499:AddParagraph({
+    Title = "Tyrant of the Skies",
+    Desc = "Status: "
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            if game:GetService("Workspace").Enemies:FindFirstChild("Tyrant of the Skies") then
+                TyrantStatus:SetDesc("Status : ✅️")
+            else
+                TyrantStatus:SetDesc("Status : ❌️")
+            end
+        end
+    end)
+end)
+local CheckRip = v499:AddParagraph({
+    Title = "Rip_Indra",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            if game:GetService("ReplicatedStorage"):FindFirstChild("rip_indra True Form") 
+            or game:GetService("Workspace").Enemies:FindFirstChild("rip_indra") then
+                CheckRip:SetDesc("Status : ✅️")
+            else
+                CheckRip:SetDesc("Status : ❌️")
+            end
+        end)
+    end
+end)
+local CheckDoughKing = v499:AddParagraph({
+    Title = "Dough King",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            if game:GetService("ReplicatedStorage"):FindFirstChild("Dough King") 
+            or game:GetService("Workspace").Enemies:FindFirstChild("Dough King") then
+                CheckDoughKing:SetDesc("Status : ✅️")
+            else
+                CheckDoughKing:SetDesc("Status : ❌️")
+            end
+        end)
+    end
+end)
+local EliteHunter = v499:AddParagraph({
+    Title = "Elite Hunter",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            local rs = game:GetService("ReplicatedStorage")
+            local ws = game:GetService("Workspace").Enemies
+            local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
+            if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
+            or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
+                EliteHunter:SetDesc("Status : ✅️ | Killed: " .. progress)
+            else
+                EliteHunter:SetDesc("Status : ❌️ | Killed: " .. progress)
+            end
+        end)
+    end
+end)
+local Pullever = v499:AddParagraph({
+    Title = "Pull Lever",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            if game.ReplicatedStorage.Remotes.CommF_:InvokeServer("CheckTempleDoor") then
+                Pullever:SetDesc("✅")
+            else
+                Pullever:SetDesc("❌")
+            end
+        end)
+    end
+end)
+local FM = v499:AddParagraph({
+    Title = "Full Moon",
+    Desc = ""
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            local moonId = game:GetService("Lighting").Sky.MoonTextureId
+            if moonId == "http://www.roblox.com/asset/?id=9709149431" then
+                FM:SetDesc("Moon: 5/5")
+            elseif moonId == "http://www.roblox.com/asset/?id=9709149052" then
+                FM:SetDesc("Moon: 4/5")
+            elseif moonId == "http://www.roblox.com/asset/?id=9709143733" then
+                FM:SetDesc("Moon: 3/5")
+            elseif moonId == "http://www.roblox.com/asset/?id=9709150401" then
+                FM:SetDesc("Moon: 2/5")
+            elseif moonId == "http://www.roblox.com/asset/?id=9709149680" then
+                FM:SetDesc("Moon: 1/5")
+            else
+                FM:SetDesc("Moon: 0/5")
+            end
+        end)
+    end
+end)
+local LegendarySword = v499:AddParagraph({
+    Title = "Legendary Sword",
+    Desc = "Status: "
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            local rs = game:GetService("ReplicatedStorage").Remotes.CommF_   
+            if rs:InvokeServer("LegendarySwordDealer", "1") then
+                LegendarySword:SetDesc("Shisui")
+            elseif rs:InvokeServer("LegendarySwordDealer", "2") then
+                LegendarySword:SetDesc("Wando")
+            elseif rs:InvokeServer("LegendarySwordDealer", "3") then
+                LegendarySword:SetDesc("Saddi")
+            else
+                LegendarySword:SetDesc("Not Found Legend Swords")
+            end
+        end
+    end)
+end)
+local Bone = v499:AddParagraph({
+    Title = "Bone",
+    Desc = ""
+})
+spawn(function()
+    pcall(function()
+        while wait() do
+            local bones = game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Bones", "Check")
+            Bone:SetDesc("You Have : " .. tostring(bones) .. " Bones")
+        end
+    end)
+end)
+
+
 -- // AUTO STATS SYSTEM
 local Replicated = game:GetService("ReplicatedStorage")
 local CommF = Replicated:WaitForChild("Remotes"):WaitForChild("CommF_")
@@ -8921,82 +9064,175 @@ v497:AddToggle({
 })
 
 local _ = v494:AddSection({"Aimbot Nearest"})
+
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
 
-local AimbotGun = false
-local AimbotTap = false
-local AimbotSkills = false
-local IgnoreMobs = false
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+local IgnoreMobs = true
 
--- Aimbot Gun
+-- ===============================
+-- FUNÇÃO DE ATUALIZAÇÃO (COMPATÍVEL COM SUA LÓGICA)
+-- ===============================
+local function UpdateAimbot()
+    if not AimbotEnabled then
+        v1:SetPlayerSilentAim(false)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando players
+    if AimPlayers then
+        v1:SetPlayerSilentAim(true)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando mobs
+    if AimMobs then
+        if IgnoreMobs then
+            v1:SetNPCSilentAim(false)
+        else
+            v1:SetNPCSilentAim(true)
+        end
+        v1:SetPlayerSilentAim(false)
+        return
+    end
+
+    -- fallback de segurança
+    v1:SetPlayerSilentAim(false)
+    v1:SetNPCSilentAim(false)
+end
+
+-- ===============================
+-- TOGGLE PRINCIPAL
+-- ===============================
 v494:AddToggle({
     Name = "Aimbot Gun",
     Default = false,
     Callback = function(v)
-        AimbotGun = v
-        local char = game.Players.LocalPlayer.Character
-        local tool = char and char:FindFirstChildOfClass("Tool")
+        AimbotEnabled = v
 
-        if tool and tool.ToolTip == "Gun" and AimbotGun then
-            v1:SetPlayerSilentAim(true)
+        if not v then
+            v1:Pause()
         else
-            v1:SetPlayerSilentAim(false)
+            v1:Restore()
         end
+
+        UpdateAimbot()
     end
 })
 
--- Aimbot Tap
+-- ===============================
+-- AIM PLAYERS
+-- ===============================
 v494:AddToggle({
     Name = "Aimbot Tap",
     Default = false,
     Callback = function(v)
-        AimbotTap = v
-        if IgnoreMobs then
-            v1:SetNPCSilentAim(false)
-        else
-            v1:SetNPCSilentAim(AimbotTap and AimbotSkills)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
         end
+
+        UpdateAimbot()
     end
 })
 
--- Aimbot Skills
+-- ===============================
+-- AIM MOBS
+-- ===============================
 v494:AddToggle({
     Name = "Aimbot Skills",
     Default = false,
     Callback = function(v)
-        AimbotSkills = v
-        if not v then
-            v1:Pause()
-            v1:SetPlayerSilentAim(false)
-            v1:SetNPCSilentAim(false)
-        else
-            v1:Restore()
-            -- Gun control separado
-            local char = game.Players.LocalPlayer.Character
-            local tool = char and char:FindFirstChildOfClass("Tool")
-            if tool and tool.ToolTip == "Gun" and AimbotGun then
-                v1:SetPlayerSilentAim(true)
-            end
+        AimMobs = v
 
-            if AimbotTap and not IgnoreMobs then
-                v1:SetNPCSilentAim(true)
-            end
+        if v then
+            AimPlayers = false
         end
+
+        UpdateAimbot()
     end
 })
 
--- Ignore Mobs
+-- ===============================
+-- IGNORE MOBS (AGORA FUNCIONAL)
+-- ===============================
 v494:AddToggle({
     Name = "Ignore Mobs",
     Default = true,
     Callback = function(v)
         IgnoreMobs = v
-        if v then
+        UpdateAimbot()
+    end
+})
+
+local _ = v494:AddSection({"Aimbot skill V2"})
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+
+v494:AddToggle({
+    Name = "Enable Aimbot Skill",
+    Default = false,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+            v1:SetPlayerSilentAim(false)
             v1:SetNPCSilentAim(false)
         else
-            if AimbotSkills and AimbotTap then
+            if AimPlayers then
+                v1:SetPlayerSilentAim(true)
+            end
+            if AimMobs then
                 v1:SetNPCSilentAim(true)
             end
+            v1:Restore()
+        end
+    end
+})
+
+v494:AddToggle({
+    Name = "Aimbot on Players",
+    Default = false,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+            v1:SetNPCSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetPlayerSilentAim(v)
+        else
+            v1:SetPlayerSilentAim(false)
+        end
+    end
+})
+
+v494:AddToggle({
+    Name = "Aimbot on Mobs",
+    Default = false,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+            v1:SetPlayerSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetNPCSilentAim(v)
+        else
+            v1:SetNPCSilentAim(false)
         end
     end
 })
@@ -9264,6 +9500,7 @@ v494:AddToggle({
         end
     end
 })
+
 local _ = v495:AddSection({"Fighting Style"})
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -10525,6 +10762,7 @@ task.spawn(function()
         end
     end
 end)
+
 local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
@@ -10588,7 +10826,6 @@ v496:AddToggle({
         end
     end
 })
-
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
