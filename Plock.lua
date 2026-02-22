@@ -3828,7 +3828,6 @@ v485:AddDropdown({
     end
 })
 local _ = v485:AddSection({"Farm"})
--- Configuração únic
 -- Funções auxiliares globais
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -3957,33 +3956,26 @@ local function CheckQuestNew()
         CFrameMonNew = CFrame.new(10965.1025, -2158.8842, 9177.2597)
     end
 end
-
--- Toggle único
 v485:AddToggle({
     Name = "Auto Farm Level",
-    Description = "Auto Farm Level 1-2800",
+    Description = "Farm Level",
     Default = false,
     Callback = function(state)
         _G.AutoFarm = state
         StopTween(_G.AutoFarm)
     end
 })
-
--- Loop principal unificado
 spawn(function()
     while task.wait() do
         if _G.AutoFarm then
             pcall(function()
-                local currentLevel = LocalPlayer.Data.Level.Value
-                
-                -- Verifica se precisa ir para área submarina
-                if currentLevel >= 2600 and not IsInSubmerged() then
-                    GoSubmerged()
-                end
-                
-                -- Se está em nível submarino (>= 2600) e está na área submarina
-                if currentLevel >= 2600 and IsInSubmerged() then
-                    -- Farm Novo (2600+)
+                local currentLevel = LocalPlayer.Data.Level.Value                
+                if currentLevel >= 2600 and World3 then
+                      if not IsInSubmerged() then
+                           GoSubmerged()
+                    end
+              end                
+                if currentLevel >= 2600 and World3 and IsInSubmerged() then
                     CheckQuestNew()
                     
                     local questGui = LocalPlayer.PlayerGui.Main.Quest
@@ -9351,7 +9343,8 @@ local function CreateESP(player)
 	nameLabel.BackgroundTransparency = 1
 	nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
 	nameLabel.Position = UDim2.new(0, 0, 0, 0)
-	nameLabel.TextColor3 = Color3.fromRGB(210,210,210)
+	nameLabel.RichText = true
+    nameLabel.TextColor3 = Color3.fromRGB(210,210,210) 
 	nameLabel.TextStrokeTransparency = 0
 	nameLabel.TextSize = 24
 	nameLabel.Font = Enum.Font.SourceSans
@@ -9393,7 +9386,7 @@ local function CreateESP(player)
 			(myHRP.Position - hrp.Position).Magnitude
 		)
 
-		nameLabel.Text = player.Name .. " [" .. distance .. "m]"
+    	nameLabel.Text = "<font color='rgb(235,235,235)'>" .. player.Name .. "</font> [ "  ..  distance .. "m ]"
 		hpLabel.Text = "[" .. math.floor(hum.Health) .. "/" .. math.floor(hum.MaxHealth) .. "]"
 	end)
 end
@@ -9497,6 +9490,43 @@ v494:AddToggle({
             end
         else
             UpdateBerriesESP()
+        end
+    end
+})
+
+    v494:AddSection("Visual")
+local vu14 = game.Players.LocalPlayer
+
+v494:AddButton({
+    "Meteor Rain",
+    function()
+        if vu14.Character and vu14.Character.PrimaryPart then
+            require(game:GetService("ReplicatedStorage").Effect.Container.UzothSpec)({
+                Position = vu14.Character.PrimaryPart.Position
+            })
+        end
+    end
+})
+local vu14 = game.Players.LocalPlayer
+
+v494:AddButton({
+    "Remove Portal Dash Cooldown",
+    function()
+        local portal = vu14.Backpack:FindFirstChild("Portal-Portal") or (vu14.Character and vu14.Character:FindFirstChild("Portal-Portal"))
+        if portal then
+            local connections = getconnections(portal.Activated)
+            for i = 1, #connections do
+                local conn = connections[i]
+                local func = conn.Function
+                if func and #debug.getupvalues(func) == 9 then
+                    task.spawn(function()
+                        while portal and portal:IsDescendantOf(game) do
+                            debug.setupvalue(func, 2, 0)
+                            task.wait(0.1) 
+                        end
+                    end)
+                end
+            end
         end
     end
 })
@@ -10702,33 +10732,7 @@ v496:AddButton({
 v496:AddButton({Title = "Server Hop", Callback = function()
     Hop()
 end})
-    function CheckAntiCheatBypass()
-        for i,v in pairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
-            if v:IsA("LocalScript") then
-                if v.Name == "General" or v.Name == "Shiftlock"  or v.Name == "FallDamage" or v.Name == "4444" or v.Name == "CamBob" or v.Name == "JumpCD" or v.Name == "Looking" or v.Name == "Run" then
-                    v:Destroy()
-                end
-            end
-         end
-         for i,v in pairs(game:GetService("Players").LocalPlayer.PlayerScripts:GetDescendants()) do
-            if v:IsA("LocalScript") then
-                if v.Name == "RobloxMotor6DBugFix" or v.Name == "Clans"  or v.Name == "Codes" or v.Name == "CustomForceField" or v.Name == "MenuBloodSp"  or v.Name == "PlayerList" then
-                    v:Destroy()
-                end
-            end
-         end
-        end
-    
-    CheckAntiCheatBypass()
-    
-    v496:AddToggle({
-        Name = "Antiban",
-        Default = true,
-        Callback = function(Value)
-            _G.AntiCheat = Value
-            CheckAntiCheatBypass()
-        end    
-    })
+
 print("--[[Hop Server If You Meet Game Admin]]--")
 
 local Admins = {
